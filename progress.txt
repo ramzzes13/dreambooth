@@ -104,15 +104,60 @@ Started: Sat Feb 21 09:43:48 PM MSK 2026
 - Blockwise LoRA: 53% parameter reduction vs uniform r=16 with comparable/better fidelity
 - CCD: +1.3% DINO at 500 steps, +6.6% DINO at 1000 steps (regularization effect)
 
-### What Remains (unchanged from Session 1):
-- Scale to DiT architectures (FLUX/SD3) - blocked by GPU memory
-- Multi-subject composition full generation experiments
-- Real-world subject images
-- Human preference studies
-
 ### Git Commits:
 - ccbef44: Add 10 additional experiments, expand paper to 11 pages
 - acc461f: Add experiment results data
 - 693a178: Fix rounding in paper tables to match actual experiment data
+
+---
+
+## Session 3 (Feb 21 ~23:10+ MSK)
+
+### Completed:
+1. **Multi-subject composition experiments (2x2 factorial)**:
+   - Trained second subject (cat) with blockwise+CCD and blockwise-only LoRAs
+   - Generated 12 cat subject+class images using SD 1.4
+   - Implemented masked denoising loop for SD 1.4 UNet (state-dict-level LoRA apply/remove)
+   - Ran 4 conditions: {naive, masked} x {no-CCD, CCD}
+   - 48 total multi-subject images generated (12 per condition)
+
+2. **Multi-subject results (key finding: CCD improves composability)**:
+   - Naive no-CCD: IIS=0.015, CLIP-T=0.268, CrossCont=0.265
+   - Naive CCD: IIS=0.045, CLIP-T=0.273, CrossCont=0.254
+   - Masked no-CCD: IIS=0.072, CLIP-T=0.283, CrossCont=0.210
+   - Masked CCD: IIS=0.123, CLIP-T=0.278, CrossCont=0.204
+   - Full method (masked+CCD) achieves 8.0x higher IIS than naive no-CCD baseline
+   - Masking alone: 4.7x IIS improvement
+   - CCD alone: +71% IIS improvement on masked, +190% on naive
+   - Cross-contamination reduced 23% (0.265 -> 0.204)
+
+3. **Citation verification**: All 27 citations verified as real papers with correct authors/venues
+   - Fixed one minor issue: SID title "Entanglement" -> "Entanglements" (plural)
+
+4. **Paper updated to 12 pages**:
+   - Added Section 4.7: Multi-Subject Composition with 2x2 factorial table
+   - Added multi-subject comparison figure (4-condition bar chart)
+   - Updated abstract, discussion, conclusion with composition findings
+   - Total: 9 tables, 8 figures, 27 citations
+   - Paper compiles cleanly
+
+5. **All 55 tests still passing**
+
+### Total Experiments (19):
+- 5 base configs (uniform r4/r8/r16, blockwise, blockwise+CCD)
+- 4 rank sensitivity (id_rank 8/12/24/32)
+- 3 CCD lambda (0.1/0.5/1.0)
+- 3 training duration (1000 steps: uniform_r8, blockwise, blockwise+CCD)
+- 4 multi-subject conditions ({naive,masked} x {no-CCD,CCD})
+
+### What Remains:
+- Scale to DiT architectures (FLUX/SD3) - blocked by GPU memory
+- More complex multi-subject layouts (3+ subjects, overlapping regions)
+- Real-world subject images
+- Human preference studies
+
+### Git Commits:
+- 07795e7: Add multi-subject composition experiments and paper update
+- fd8e85c: Add 2x2 factorial multi-subject experiment (CCD x masking)
 
 <promise>COMPLETE</promise>
