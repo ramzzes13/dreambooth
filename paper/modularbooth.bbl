@@ -1,0 +1,203 @@
+\begin{thebibliography}{26}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{Black Forest Labs}(2024)]{blackforestlabs2024flux}
+{Black Forest Labs}.
+\newblock {FLUX.1}, 2024.
+\newblock URL \url{https://blackforestlabs.ai/announcing-black-forest-labs/}.
+
+\bibitem[Caron et~al.(2021)Caron, Touvron, Misra, J{\'e}gou, Mairal,
+  Bojanowski, and Joulin]{caron2021dino}
+Caron, M., Touvron, H., Misra, I., J{\'e}gou, H., Mairal, J., Bojanowski, P.,
+  and Joulin, A.
+\newblock Emerging properties in self-supervised vision transformers.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision (ICCV)}, pp.\  9650--9660, 2021.
+
+\bibitem[Chen et~al.(2020)Chen, Kornblith, Norouzi, and Hinton]{chen2020simclr}
+Chen, T., Kornblith, S., Norouzi, M., and Hinton, G.
+\newblock A simple framework for contrastive learning of visual
+  representations.
+\newblock \emph{Proceedings of the International Conference on Machine Learning
+  (ICML)}, pp.\  1597--1607, 2020.
+
+\bibitem[Esser et~al.(2024)Esser, Kulal, Blattmann, Entezari, M{\"u}ller,
+  Saini, Levi, Lorenz, Sauer, Boesel, Podell, Dockhorn, English, Lacey,
+  Goodwin, Marek, and Rombach]{esser2024scaling}
+Esser, P., Kulal, S., Blattmann, A., Entezari, R., M{\"u}ller, J., Saini, H.,
+  Levi, Y., Lorenz, D., Sauer, A., Boesel, F., Podell, D., Dockhorn, T.,
+  English, Z., Lacey, K., Goodwin, A., Marek, Y., and Rombach, R.
+\newblock Scaling rectified flow transformers for high-resolution image
+  synthesis.
+\newblock In \emph{Proceedings of the International Conference on Machine
+  Learning (ICML)}, 2024.
+
+\bibitem[Gal et~al.(2023)Gal, Alaluf, Atzmon, Patashnik, Bermano, Chechik, and
+  Cohen-Or]{gal2022textual}
+Gal, R., Alaluf, Y., Atzmon, Y., Patashnik, O., Bermano, A.~H., Chechik, G.,
+  and Cohen-Or, D.
+\newblock An image is worth one word: Personalizing text-to-image generation
+  using textual inversion.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2023.
+
+\bibitem[Garibi et~al.(2025)Garibi, Yadin, Paiss, Tov, Zada, Ephrat, Michaeli,
+  Mosseri, and Dekel]{tokenverse2025}
+Garibi, D., Yadin, S., Paiss, R., Tov, O., Zada, S., Ephrat, A., Michaeli, T.,
+  Mosseri, I., and Dekel, T.
+\newblock {TokenVerse}: Versatile multi-concept personalization in token
+  modulation space.
+\newblock In \emph{ACM SIGGRAPH}, 2025.
+
+\bibitem[Ho et~al.(2020)Ho, Jain, and Abbeel]{ho2020denoising}
+Ho, J., Jain, A., and Abbeel, P.
+\newblock Denoising diffusion probabilistic models.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  33:\penalty0 6840--6851, 2020.
+
+\bibitem[Hu et~al.(2022)Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and
+  Chen]{hu2022lora}
+Hu, E.~J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., and
+  Chen, W.
+\newblock {LoRA}: Low-rank adaptation of large language models.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2022.
+
+\bibitem[Jang et~al.(2024)Jang, Jo, Lee, and Hwang]{mudi2024}
+Jang, S., Jo, J., Lee, K., and Hwang, S.~J.
+\newblock Identity decoupling for multi-subject personalization of
+  text-to-image models.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2024.
+
+\bibitem[Jeong \& Kim(2025)Jeong and Kim]{mindiff2025}
+Jeong, S. and Kim, J.
+\newblock {MINDiff}: Mask-integrated negative attention for controlling
+  overfitting in text-to-image personalization.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision Workshops (ICCVW)}, 2025.
+
+\bibitem[Kim et~al.(2024)Kim, Park, and Rhee]{sid2024}
+Kim, J., Park, J., and Rhee, W.
+\newblock Selectively informative description can reduce undesired embedding
+  entanglement in text-to-image personalization.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, 2024.
+
+\bibitem[Kirillov et~al.(2023)Kirillov, Mintun, Ravi, Mao, Rolland, Gustafson,
+  Xiao, Whitehead, Berg, Lo, Doll{\'a}r, and Girshick]{kirillov2023segment}
+Kirillov, A., Mintun, E., Ravi, N., Mao, H., Rolland, C., Gustafson, L., Xiao,
+  T., Whitehead, S., Berg, A.~C., Lo, W.-Y., Doll{\'a}r, P., and Girshick, R.
+\newblock Segment anything.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision (ICCV)}, pp.\  3992--4003, 2023.
+
+\bibitem[Kumari et~al.(2023)Kumari, Zhang, Zhang, Shechtman, and
+  Zhu]{kumari2023custom}
+Kumari, N., Zhang, B., Zhang, R., Shechtman, E., and Zhu, J.-Y.
+\newblock Multi-concept customization of text-to-image diffusion.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, pp.\  1931--1941, 2023.
+
+\bibitem[Loshchilov \& Hutter(2019)Loshchilov and Hutter]{loshchilov2019adamw}
+Loshchilov, I. and Hutter, F.
+\newblock Decoupled weight decay regularization.
+\newblock \emph{International Conference on Learning Representations (ICLR)},
+  2019.
+
+\bibitem[Peebles \& Xie(2023)Peebles and Xie]{peebles2023dit}
+Peebles, W. and Xie, S.
+\newblock Scalable diffusion models with transformers.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision (ICCV)}, pp.\  4195--4205, 2023.
+
+\bibitem[Peng et~al.(2026)Peng, Zheng, Yang, Huang, Yan, Liu, and
+  Chen]{tara2026}
+Peng, Y., Zheng, L., Yang, Y., Huang, Y., Yan, M., Liu, J., and Chen, S.
+\newblock {TARA}: Token-aware {LoRA} for composable personalization in
+  diffusion models.
+\newblock In \emph{Proceedings of the AAAI Conference on Artificial
+  Intelligence (AAAI)}, 2026.
+
+\bibitem[Radford et~al.(2021)Radford, Kim, Hallacy, Ramesh, Goh, Agarwal,
+  Sastry, Askell, Mishkin, Clark, et~al.]{radford2021clip}
+Radford, A., Kim, J.~W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry,
+  G., Askell, A., Mishkin, P., Clark, J., et~al.
+\newblock Learning transferable visual models from natural language
+  supervision.
+\newblock \emph{Proceedings of the International Conference on Machine Learning
+  (ICML)}, pp.\  8748--8763, 2021.
+
+\bibitem[Ram et~al.(2025)Ram, Neiman, Feng, Stuart, Tran, and
+  Chilimbi]{dreamblend2025}
+Ram, S., Neiman, T., Feng, Q., Stuart, A., Tran, S., and Chilimbi, T.
+\newblock {DreamBlend}: Advancing personalized fine-tuning of text-to-image
+  diffusion models.
+\newblock In \emph{Proceedings of the IEEE/CVF Winter Conference on
+  Applications of Computer Vision (WACV)}, 2025.
+
+\bibitem[Rombach et~al.(2022)Rombach, Blattmann, Lorenz, Esser, and
+  Ommer]{rombach2022high}
+Rombach, R., Blattmann, A., Lorenz, D., Esser, P., and Ommer, B.
+\newblock High-resolution image synthesis with latent diffusion models.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, pp.\  10684--10695, 2022.
+
+\bibitem[Ruiz et~al.(2023)Ruiz, Li, Jampani, Pritch, Rubinstein, and
+  Aberman]{ruiz2023dreambooth}
+Ruiz, N., Li, Y., Jampani, V., Pritch, Y., Rubinstein, M., and Aberman, K.
+\newblock {DreamBooth}: Fine tuning text-to-image diffusion models for
+  subject-driven generation.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, pp.\  22500--22510, 2023.
+
+\bibitem[Saharia et~al.(2022)Saharia, Chan, Saxena, Li, Whang, Denton,
+  Ghasemipour, Gontijo-Lopes, Karagol~Ayan, Salimans, Ho, Fleet, and
+  Norouzi]{saharia2022photorealistic}
+Saharia, C., Chan, W., Saxena, S., Li, L., Whang, J., Denton, E.~L.,
+  Ghasemipour, S. K.~S., Gontijo-Lopes, R., Karagol~Ayan, B., Salimans, T., Ho,
+  J., Fleet, D.~J., and Norouzi, M.
+\newblock Photorealistic text-to-image diffusion models with deep language
+  understanding.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  35:\penalty0 36479--36494, 2022.
+
+\bibitem[Simsar et~al.(2025)Simsar, Hofmann, Tombari, and
+  Yanardag]{loraclr2025}
+Simsar, E., Hofmann, T., Tombari, F., and Yanardag, P.
+\newblock {LoRACLR}: Contrastive adaptation for customization of diffusion
+  models.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, 2025.
+
+\bibitem[van~den Oord et~al.(2018)van~den Oord, Li, and
+  Vinyals]{oord2018infonce}
+van~den Oord, A., Li, Y., and Vinyals, O.
+\newblock Representation learning with contrastive predictive coding.
+\newblock \emph{arXiv preprint arXiv:1807.03748}, 2018.
+
+\bibitem[Ye et~al.(2023)Ye, Zhang, Liu, Han, and Yang]{ye2023ipadapter}
+Ye, H., Zhang, J., Liu, S., Han, X., and Yang, W.
+\newblock {IP-Adapter}: Text compatible image prompt adapter for text-to-image
+  diffusion models.
+\newblock \emph{arXiv preprint arXiv:2308.06721}, 2023.
+
+\bibitem[Zhang et~al.(2018)Zhang, Isola, Efros, Shechtman, and
+  Wang]{zhang2018lpips}
+Zhang, R., Isola, P., Efros, A.~A., Shechtman, E., and Wang, O.
+\newblock The unreasonable effectiveness of deep features as a perceptual
+  metric.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, 2018.
+
+\bibitem[Zhu et~al.(2025)Zhu, Chen, Wang, Yu, Zhao, and Jia]{zhu2025blocklora}
+Zhu, M., Chen, X., Wang, Z., Yu, B., Zhao, H., and Jia, J.
+\newblock Modular customization of diffusion models via blockwise-parameterized
+  low-rank adaptation.
+\newblock \emph{arXiv preprint arXiv:2503.08575}, 2025.
+
+\end{thebibliography}
