@@ -1,0 +1,31 @@
+{
+  "name": "uniform_rank16",
+  "block_config": {
+    "0": "shared",
+    "1": "shared",
+    "2": "shared",
+    "3": "shared"
+  },
+  "identity_rank": 16,
+  "context_rank": 16,
+  "shared_rank": 16,
+  "training_steps": 200,
+  "training_time_s": 20.90314292907715,
+  "final_loss_total": 0.16839462280273437,
+  "final_loss_diffusion": 0.22608605553122127,
+  "final_loss_ppl": 0.13867479382139264,
+  "lora_params": 3188736,
+  "lora_param_breakdown": {
+    "identity": 0,
+    "context": 0,
+    "shared": 3188736
+  },
+  "lora_size_mb": 6.1146087646484375,
+  "metrics": {
+    "dino_score": 0.37200331687927246,
+    "clip_t_score": 0.2407732903957367,
+    "clip_i_score": 0.8017375469207764,
+    "vqa_alignment": 0.6666666666666666,
+    "lpips_diversity": 0.7133177618185679
+  }
+}

@@ -1,0 +1,196 @@
+============================================================
+ModularBooth Paper Review
+Reviewer: Automated Critical Review Agent
+Date: 2026-02-21
+============================================================
+
+VERDICT: CONDITIONAL PASS
+
+The paper passes all integrity checks (real data, real citations,
+reproducible results, no fabrication) but has significant quality
+gaps relative to the ICML A* target. These are fixable issues, not
+fundamental flaws.
+
+============================================================
+1. INTEGRITY CHECKS (ALL PASS)
+============================================================
+
+[PASS] Citations: All 26 cited references are REAL papers with
+  correct authors, venues, and years. No hallucinated citations.
+  Minor BibTeX style issues (3 entries use @article instead of
+  @inproceedings for conference papers: CLIP, SimCLR, AdamW).
+  One unused entry in bib: oquab2024dinov2 (never cited in tex).
+
+[PASS] Data Integrity: All 15 experiment result sets verified
+  against results.json files. Every number in every table matches
+  actual data within standard rounding (3 decimal places for most
+  metrics, 5 for CAE). Zero discrepancies found.
+
+[PASS] Figures: All 5 referenced figures exist as PDF files in
+  paper/figures/. Generated from real data via matplotlib scripts.
+
+[PASS] Code: All core modules are substantive implementations,
+  not stubs. blockwise_lora.py (423 LOC), trainer.py (930 LOC),
+  multi_subject.py (815 LOC), ccd_loss.py (197 LOC). 55 tests
+  pass (53 unit + 2 GPU E2E).
+
+[PASS] Reproducibility: Fixed seeds, complete codebase on GitHub,
+  detailed appendix with implementation specifics.
+
+[PASS] Neuroslop: Zero instances of banned terms (delve, leverage,
+  "in this paper we", "it is worth noting", notably, crucial,
+  comprehensive, aforementioned, utilize, pivotal, intricate).
+
+============================================================
+2. SUBSTANTIVE ISSUES (MUST FIX for ICML quality)
+============================================================
+
+ISSUE S1: NO EXTERNAL BASELINES [CRITICAL]
+  The paper only compares blockwise LoRA variants against uniform
+  LoRA variants. No comparison with:
+  - DreamBooth (full fine-tuning) on same data/backbone
+  - Custom Diffusion (cross-attention only)
+  - Textual Inversion
+  - Any published method's numbers
+  An ICML paper MUST compare against prior work, not just ablate
+  its own components. At minimum, run DreamBooth and Custom
+  Diffusion on the same SD 1.4 setup.
+
+ISSUE S2: NO ERROR BARS / STATISTICAL SIGNIFICANCE [CRITICAL]
+  All results report single-run point estimates. With only 12
+  evaluation images (6 prompts x 2 seeds), variance is likely
+  high. DINO differences of 0.005-0.010 between configs could
+  easily be within noise. Must report:
+  - Standard deviations or confidence intervals
+  - Multiple training seeds (at least 3)
+  - Statistical significance tests for key comparisons
+
+ISSUE S3: UNIFORM r=8 UNDERMINES THE MAIN CLAIM [MAJOR]
+  Table 1 shows Uniform r=8 (1.59M params, DINO 0.398) beats
+  Blockwise (1.49M params, DINO 0.392) on the primary metric
+  (DINO) with comparable parameters. The 53% reduction claim
+  compares against r=16 (which is a weaker baseline than r=8).
+  The paper acknowledges this but still leads the abstract with
+  "53% parameter reduction... while achieving higher DINO" which
+  is only true vs r=16, not vs the best baseline. This needs
+  more honest framing.
+
+ISSUE S4: UNIFORM r=16 VQA ANOMALY [MAJOR]
+  Table 7 (full results) shows Uniform r=16 VQA = 0.904, which
+  is the BEST VQA across all configs by a large margin (next is
+  0.863). The paper's caption claims Blockwise+CCD has "best VQA
+  (0.863) among blockwise configs" which is technically true but
+  misleading -- it omits that a simpler baseline (uniform r=16)
+  achieves much higher VQA. This discrepancy between Table 1
+  (which omits VQA) and Table 7 (which includes it) feels like
+  cherry-picking. Either explain this or restructure the tables.
+
+ISSUE S5: NO QUALITATIVE RESULTS [MAJOR]
+  The paper contains zero generated image examples. No visual
+  comparison of subjects across methods, no multi-subject
+  composition visualizations, no failure cases. For a generative
+  modeling paper, this is a significant omission. Reviewers will
+  want to SEE the generated images.
+
+ISSUE S6: MISSING IMPACT STATEMENT [MINOR BUT REQUIRED]
+  ICML 2025 requires an Impact Statement section. The paper
+  lacks one entirely.
+
+ISSUE S7: SD 1.4 ONLY / DiT MOTIVATION MISMATCH [MAJOR]
+  The paper's motivation (Section 3.1) cites DiT block functional
+  stratification from BlockLoRA, but all experiments are on SD 1.4
+  (a UNet architecture, not a DiT). SD 1.4 has only 4 transformer
+  block indices, making the identity/shared/context classification
+  very coarse. The paper should either:
+  (a) Provide evidence the stratification holds for UNet blocks, or
+  (b) Frame the contribution as a general principle and acknowledge
+      the UNet/DiT gap more prominently (currently in Limitations).
+
+ISSUE S8: SYNTHETIC DATA ONLY [MODERATE]
+  Both training subjects and class-prior images are generated by
+  SD 1.4 itself. DINO/CLIP-I scores measure similarity between
+  model-generated images, which may not transfer to real-world
+  photos. Acknowledged in limitations but should be more prominent.
+
+============================================================
+3. MINOR ISSUES
+============================================================
+
+ISSUE M1: Unused bib entry `oquab2024dinov2` -- remove from
+  references.bib or cite it in the paper.
+
+ISSUE M2: Table 1 and Table 7 show the same base configs but
+  Table 1 omits VQA/CAE while Table 7 includes them. This creates
+  redundancy (8 tables total is excessive) and obscures the r=16
+  VQA result. Consider consolidating.
+
+ISSUE M3: The "CCD acts as regularizer" claim (Section 4.5) is
+  the strongest finding but is buried in a subsection. Consider
+  promoting this to a more prominent position.
+
+ISSUE M4: Paper reports 128 adapted linear layers but doesn't
+  break down which layers in which UNet blocks. A table showing
+  the exact block-to-layer mapping would help reproducibility.
+
+ISSUE M5: The multi-subject IIS metric (crop left/right halves)
+  is crude -- it assumes perfect left/right separation which the
+  model might not achieve. A segmentation-based crop would be
+  more robust.
+
+ISSUE M6: The abstract is 196 words -- slightly long for ICML
+  (recommended 4-6 sentences). It's currently ~10 sentences.
+
+ISSUE M7: Some figures (rank_sensitivity, training_duration) are
+  referenced in text but it's unclear if they add information
+  beyond the tables. Consider whether all 8 figures are needed.
+
+============================================================
+4. WRITING QUALITY ASSESSMENT
+============================================================
+
+[GOOD] Clear, professional scientific English throughout.
+[GOOD] No neuroslop or filler sentences.
+[GOOD] Honest about limitations (4 explicit limitations listed).
+[GOOD] Algorithm pseudocode is clear and complete.
+[GOOD] Related work covers the field thoroughly (5 paragraphs).
+[MODERATE] "Extraordinary generative diversity" (line 58) is
+  slightly flowery. "Principled extension" (line 676) is vague.
+[GOOD] Method section is well-structured and mathematically precise.
+
+============================================================
+5. OVERALL ASSESSMENT
+============================================================
+
+The paper demonstrates genuine engineering and experimental work:
+19 real experiments, real code, real metrics, verified citations.
+The writing quality is above average -- clean, precise, no filler.
+The CCD regularization finding (Section 4.5) is genuinely
+interesting and well-supported by data.
+
+However, for ICML A* the paper falls short in three critical
+areas: (1) no comparison with external baselines, (2) no error
+bars/statistical analysis, and (3) no qualitative visual results.
+The main quantitative claim (53% param reduction) is undermined
+by uniform r=8 being competitive at similar parameter counts.
+
+In its current form, this is a solid workshop paper (e.g., ICML
+workshop on generative models) or a lower-tier venue paper. To
+reach ICML A*, it needs external baselines, error bars, qualitative
+results, and an honest re-framing of the parameter efficiency claim.
+
+============================================================
+6. REQUIRED FIXES (ordered by priority)
+============================================================
+
+1. Add external baselines: DreamBooth full FT, Custom Diffusion,
+   Textual Inversion on same SD 1.4 setup
+2. Add error bars: run key configs with 3+ seeds
+3. Add qualitative figure: generated image grid comparing methods
+4. Add Impact Statement section
+5. Fix parameter efficiency framing (compare vs r=8, not just r=16)
+6. Address VQA anomaly for uniform r=16 in Table 7
+7. Add multi-subject qualitative examples
+8. Remove unused oquab2024dinov2 bib entry
+9. Consider consolidating redundant tables
+
+============================================================

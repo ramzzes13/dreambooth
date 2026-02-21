@@ -160,4 +160,27 @@ Started: Sat Feb 21 09:43:48 PM MSK 2026
 - 07795e7: Add multi-subject composition experiments and paper update
 - fd8e85c: Add 2x2 factorial multi-subject experiment (CCD x masking)
 
-<promise>COMPLETE</promise>
+## Review (Feb 21 ~23:30+ MSK)
+
+### Paper Review Result: CONDITIONAL PASS
+Full review written to review.txt
+
+### Critical Issues That Must Be Fixed:
+1. **No external baselines** - Must add DreamBooth full FT, Custom Diffusion, Textual Inversion comparisons on same SD 1.4 setup
+2. **No error bars** - Need multiple training seeds (3+) and confidence intervals for all metrics
+3. **No qualitative results** - Need generated image grids comparing methods visually
+4. **Missing Impact Statement** - ICML requirement
+5. **Parameter efficiency claim misleading** - Uniform r=8 (1.59M, DINO 0.398) beats Blockwise (1.49M, DINO 0.392); the 53% claim only holds vs r=16
+6. **VQA anomaly** - Uniform r=16 VQA=0.904 is best by far but hidden/omitted from key tables
+7. **No multi-subject qualitative examples**
+8. **Unused bib entry** - oquab2024dinov2 never cited
+
+### What Passed:
+- All 26 citations verified as real
+- All experiment numbers verified against results.json (zero discrepancies)
+- All figures exist and use real data
+- Code is substantive (not stubs), 55 tests pass
+- Writing quality is good, zero neuroslop
+- Honest limitations section
+
+### Status: NOT COMPLETE - paper needs fixes listed above before ICML submission quality
