@@ -1,0 +1,38 @@
+{
+  "name": "baseline_r8",
+  "block_config": {
+    "0": "shared",
+    "1": "shared",
+    "2": "shared",
+    "3": "shared"
+  },
+  "config": {
+    "name": "baseline_r8",
+    "identity_rank": 8,
+    "context_rank": 8,
+    "shared_rank": 8,
+    "num_steps": 500,
+    "learning_rate": 0.0005
+  },
+  "training_time_s": 54.09908175468445,
+  "final_loss_total": 0.17298159790039064,
+  "final_loss_diffusion": 0.1970625437662273,
+  "final_loss_ppl": 0.16090496739109716,
+  "final_loss_ccd": 0,
+  "lora_params": 1594368,
+  "lora_param_breakdown": {
+    "identity": 0,
+    "context": 0,
+    "shared": 1594368
+  },
+  "lora_size_mb": 6.1143646240234375,
+  "lora_b_norm": 0.5564581956714392,
+  "metrics": {
+    "dino_score": 0.3977152109146118,
+    "cae": 0.001138845303406318,
+    "clip_t_score": 0.26457852125167847,
+    "clip_i_score": 0.7725340723991394,
+    "vqa_alignment": 0.8069444444444445,
+    "lpips_diversity": 0.8032894676381891
+  }
+}

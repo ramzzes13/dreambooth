@@ -88,8 +88,10 @@ class LoRALinear(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass combining original linear and LoRA branch."""
         base_out = self.original_linear(x)
-        lora_out = F.linear(F.linear(self.lora_dropout(x), self.lora_A), self.lora_B)
-        return base_out + self.scaling * lora_out
+        # Cast input to match LoRA param dtype (handles fp16 input + fp32 LoRA)
+        lora_input = self.lora_dropout(x).to(self.lora_A.dtype)
+        lora_out = F.linear(F.linear(lora_input, self.lora_A), self.lora_B)
+        return base_out + self.scaling * lora_out.to(base_out.dtype)
 
     # --------------------------------------------------------------------- #
 

@@ -1,0 +1,40 @@
+{
+  "name": "blockwise_ccd",
+  "block_config": {
+    "0": "identity",
+    "1": "shared",
+    "2": "context",
+    "3": "context"
+  },
+  "config": {
+    "name": "blockwise_ccd",
+    "identity_rank": 16,
+    "context_rank": 4,
+    "shared_rank": 8,
+    "num_steps": 500,
+    "learning_rate": 0.0005,
+    "use_ccd": true,
+    "lambda_ccd": 0.3
+  },
+  "training_time_s": 63.86914682388306,
+  "final_loss_total": 0.17068568370584397,
+  "final_loss_diffusion": 0.19785178635648626,
+  "final_loss_ppl": 0.15706160261824326,
+  "final_loss_ccd": 1.984742247354441e-06,
+  "lora_params": 1492480,
+  "lora_param_breakdown": {
+    "identity": 503808,
+    "context": 353792,
+    "shared": 634880
+  },
+  "lora_size_mb": 5.7257843017578125,
+  "lora_b_norm": 0.5103624298935756,
+  "metrics": {
+    "dino_score": 0.39661747217178345,
+    "cae": 0.0011673602275550365,
+    "clip_t_score": 0.2668897807598114,
+    "clip_i_score": 0.7801007032394409,
+    "vqa_alignment": 0.8624999999999999,
+    "lpips_diversity": 0.760681334770087
+  }
+}

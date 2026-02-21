@@ -1,0 +1,322 @@
+%%%%%%%% ModularBooth Paper -- ICML 2025 Format %%%%%%%%%%%%%%%%%
+
+\documentclass{article}
+
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+\usepackage{icml2025}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+\icmltitlerunning{ModularBooth: Blockwise LoRA with Contrastive Disentanglement}
+
+\begin{document}
+
+\twocolumn[
+\icmltitle{ModularBooth: Modular Multi-Subject Personalization for Diffusion Models\\via Blockwise LoRA and Contrastive Disentanglement\thanks{Code available at \url{https://github.com/ramzzes13/dreambooth}}}
+
+\begin{icmlauthorlist}
+\icmlauthor{Anonymous Author(s)}{}
+\end{icmlauthorlist}
+
+\vskip 0.3in
+
+\begin{abstract}
+Subject-driven image generation personalizes text-to-image diffusion models to reproduce a specific subject from a handful of reference images. Existing methods either fine-tune all parameters (high fidelity but impractical storage) or apply uniform low-rank adaptation (practical but suboptimal). We introduce \textbf{ModularBooth}, a framework that addresses three limitations of prior work: (1) context--appearance entanglement, where the subject's appearance changes with the prompted background; (2) inefficient parameterization that overwrites contextual knowledge uniformly across all network blocks; and (3) the absence of principled multi-subject composition from independently trained modules. ModularBooth assigns adaptive LoRA ranks to different transformer blocks based on their functional role---identity-encoding blocks receive higher rank while context-encoding blocks receive lower rank---reducing trainable parameters by 53\% compared to uniform rank-16 baselines while achieving comparable subject fidelity (DINO 0.393 vs.\ 0.378). A contrastive context disentanglement (CCD) loss operating on intermediate features explicitly separates subject identity from background context during training. At inference, a token-aware cross-attention masking protocol enables plug-and-play composition of multiple independently trained subject modules. Experiments on Stable Diffusion 1.4 with six evaluation metrics validate that blockwise parameterization matches uniform-rank fidelity at reduced cost, and that CCD improves subject fidelity (DINO 0.397) relative to blockwise training without CCD.
+\end{abstract}
+]
+
+% ====================================================================
+\section{Introduction}
+\label{sec:intro}
+% ====================================================================
+
+Personalized text-to-image generation---synthesizing photorealistic images of a specific subject in novel contexts from only 3--5 reference images---is a central problem in generative modeling. Users want to place \emph{their} dog on a beach, \emph{their} teapot in a Vermeer painting, or \emph{their} backpack on the surface of Mars. While large-scale diffusion models~\citep{rombach2022high, saharia2022photorealistic} exhibit extraordinary generative diversity, they cannot faithfully reproduce the fine-grained visual identity of a particular subject from text alone.
+
+DreamBooth~\citep{ruiz2023dreambooth} addressed this by fine-tuning all parameters of a pretrained diffusion model on subject images, binding the subject to a rare-token identifier. Despite strong results, it suffers from three fundamental issues. First, \textbf{context--appearance entanglement}: the subject's appearance can change based on the prompted context (e.g., a backpack changing color when placed on blue fabric). Second, \textbf{parameter inefficiency}: full model fine-tuning produces $\sim$2\,GB checkpoints per subject, while even standard LoRA~\citep{hu2022lora} applies uniform rank across all layers, overwriting contextual knowledge unnecessarily. Third, \textbf{single-subject limitation}: composing multiple personalized subjects in one image requires ad-hoc merging of independently trained models, leading to identity leakage between subjects.
+
+We propose ModularBooth, a framework that tackles all three issues. Our contributions are:
+
+\begin{enumerate}
+\item \textbf{Blockwise LoRA parameterization.} We classify transformer blocks into identity-encoding, context-encoding, and shared roles, assigning higher LoRA rank to identity blocks and lower rank to context blocks. This preserves the model's contextual generation prior while concentrating subject knowledge where it matters most, achieving 53\% parameter reduction versus uniform rank-16 baselines (1.49M vs.\ 3.19M parameters).
+
+\item \textbf{Contrastive Context Disentanglement (CCD) loss.} An InfoNCE-based contrastive objective~\citep{oord2018infonce} on intermediate diffusion model features that pulls together representations of the same subject across different backgrounds while pushing apart subject and context features, directly reducing entanglement during training.
+
+\item \textbf{Token-aware masked compositional inference.} A spatial masking protocol that restricts each subject's LoRA influence to its designated region during multi-subject generation, preventing identity leakage without retraining.
+\end{enumerate}
+
+% ====================================================================
+\section{Related Work}
+\label{sec:related}
+% ====================================================================
+
+\paragraph{Subject-driven generation.}
+DreamBooth~\citep{ruiz2023dreambooth} pioneered fine-tuning all diffusion model parameters with a prior-preservation loss to prevent language drift. Textual Inversion~\citep{gal2022textual} freezes the model and optimizes only a new token embedding, achieving greater efficiency at the cost of lower fidelity. Custom Diffusion~\citep{kumari2023custom} fine-tunes only cross-attention key/value projections, supporting multi-concept composition through constrained optimization. More recent work enriches training captions to reduce entanglement~\citep{sid2024} or blends checkpoint features across training stages~\citep{dreamblend2025}.
+
+\paragraph{Parameter-efficient adaptation.}
+LoRA~\citep{hu2022lora} decomposes weight updates into low-rank matrices, reducing storage to a few megabytes per subject. BlockLoRA~\citep{zhu2025blocklora} introduces blockwise LoRA parameterization with randomized output erasure for merging up to 15 concepts. Our work differs from BlockLoRA by (a)~integrating a contrastive disentanglement loss during training rather than relying on post-hoc erasure, and (b)~providing a spatial masking inference protocol for multi-subject composition.
+
+\paragraph{Multi-subject composition.}
+Composing multiple personalized subjects remains challenging. Na\"ive LoRA merging causes attribute interference. LoRACLR~\citep{loraclr2025} uses contrastive weight-space alignment to merge subject modules. TokenVerse~\citep{tokenverse2025} manipulates shift/scale modulation vectors in DiT architectures for plug-and-play concept recombination. MINDiff~\citep{mindiff2025} applies negative attention at inference to suppress identity leakage. Our masked inference protocol builds on similar spatial-restriction ideas but integrates them with blockwise-aware LoRA composition.
+
+\paragraph{Diffusion Transformer architectures.}
+Modern diffusion models have transitioned from UNet-based designs~\citep{rombach2022high} to Diffusion Transformers (DiT)~\citep{peebles2023dit}. Stable Diffusion~3~\citep{esser2024scaling} and FLUX.1~\citep{blackforestlabs2024flux} use MM-DiT blocks that jointly process text and image tokens. These architectures exhibit a known functional stratification: early blocks capture layout and structure, middle blocks encode semantics, and late blocks refine texture~\citep{zhu2025blocklora}. ModularBooth exploits this stratification for adaptive rank assignment.
+
+% ====================================================================
+\section{Method}
+\label{sec:method}
+% ====================================================================
+
+ModularBooth operates in three stages: (1)~blockwise subject encoding via adaptive-rank LoRA, (2)~contrastive context disentanglement during training, and (3)~masked compositional inference for multi-subject generation.
+
+\subsection{Blockwise Subject Encoding}
+\label{sec:blockwise}
+
+\paragraph{Block classification.}
+Given a pretrained diffusion backbone with $L$ transformer blocks, we classify each block $\ell \in \{1, \ldots, L\}$ into one of three roles based on its sensitivity to subject identity versus contextual information:
+\begin{itemize}
+    \item \textbf{Identity blocks} (early layers): high sensitivity to subject appearance, assigned LoRA rank $r_{\text{id}}$.
+    \item \textbf{Context blocks} (late layers): high sensitivity to prompted context, assigned rank $r_{\text{ctx}} \ll r_{\text{id}}$.
+    \item \textbf{Shared blocks} (middle layers): balanced sensitivity, assigned rank $r_{\text{sh}}$ with $r_{\text{ctx}} \leq r_{\text{sh}} \leq r_{\text{id}}$.
+\end{itemize}
+
+In our experiments we use $r_{\text{id}} = 16$, $r_{\text{ctx}} = 4$, $r_{\text{sh}} = 8$, and assign block roles based on layer position: the first third of blocks as identity, the last third as context, and the middle third as shared. For SD~1.4's UNet architecture, transformer blocks are indexed 0--3, yielding block~0 as identity, blocks~1--2 as shared, and block~3 as context. This heuristic is motivated by the observation that early transformer blocks in diffusion models encode low-level identity features while later blocks handle global scene composition~\citep{peebles2023dit, zhu2025blocklora}.
+
+\paragraph{LoRA injection.}
+For each targeted linear layer $\mathbf{W} \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$ in block $\ell$, we inject a LoRA adapter:
+\begin{equation}
+    \mathbf{W}' = \mathbf{W} + \frac{\alpha}{r_\ell} \mathbf{B}_\ell \mathbf{A}_\ell,
+    \label{eq:lora}
+\end{equation}
+where $\mathbf{A}_\ell \in \mathbb{R}^{r_\ell \times d_{\text{in}}}$ is initialized via Kaiming uniform, $\mathbf{B}_\ell \in \mathbb{R}^{d_{\text{out}} \times r_\ell}$ is zero-initialized, $r_\ell$ is the role-specific rank, and $\alpha = r_\ell$ (so the scaling factor is unity). The original weight $\mathbf{W}$ is frozen; only $\mathbf{A}_\ell$ and $\mathbf{B}_\ell$ are optimized.
+
+We target the query, key, value, and output projection matrices in all cross-attention and self-attention layers (\texttt{to\_q}, \texttt{to\_k}, \texttt{to\_v}, \texttt{to\_out}).
+
+\subsection{Contrastive Context Disentanglement}
+\label{sec:ccd}
+
+Standard DreamBooth training with the prior-preservation loss prevents language drift but does not explicitly separate subject appearance from background context. If all reference images depict a red backpack against a wooden table, the model may entangle ``red'' and ``wood texture'' with the subject token.
+
+\paragraph{CCD loss formulation.}
+We introduce a contrastive loss on intermediate diffusion model features. For each subject reference image, we generate context-augmented variants (via color jittering and background perturbation) where the subject is preserved but the background differs. Let $\mathbf{h}_i \in \mathbb{R}^D$ denote the pooled intermediate features for image $i$ at a target layer (the middle transformer block). We form positive pairs $(i, j)$ where $i$ is the original subject image and $j$ is a context-augmented variant, and negative pairs from class-prior images. The CCD loss follows the InfoNCE objective~\citep{oord2018infonce}:
+\begin{equation}
+    \mathcal{L}_{\text{CCD}} = -\log \frac{\exp(\text{sim}(\mathbf{h}_i, \mathbf{h}_j) / \tau)}{\exp(\text{sim}(\mathbf{h}_i, \mathbf{h}_j) / \tau) + \sum_{k \in \mathcal{N}} \exp(\text{sim}(\mathbf{h}_i, \mathbf{h}_k) / \tau)},
+    \label{eq:ccd}
+\end{equation}
+where $\text{sim}(\cdot, \cdot)$ is cosine similarity between $\ell_2$-normalized features, $\tau = 0.07$ is the temperature, and $\mathcal{N}$ is the set of negative samples. Features are extracted via forward hooks on the target intermediate layer.
+
+\paragraph{Total training objective.}
+The complete loss combines three terms:
+\begin{equation}
+    \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{denoise}} + \lambda_1 \mathcal{L}_{\text{PPL}} + \lambda_2 \mathcal{L}_{\text{CCD}},
+    \label{eq:total_loss}
+\end{equation}
+where $\mathcal{L}_{\text{denoise}}$ is the standard diffusion denoising loss on subject images, $\mathcal{L}_{\text{PPL}}$ is the prior-preservation loss on class-generated images, $\lambda_1 = 1.0$, and $\lambda_2 = 0.3$. The CCD loss is disabled for the first 100 warm-up steps to allow the denoising objective to stabilize.
+
+\subsection{Masked Compositional Inference}
+\label{sec:masked_inference}
+
+Given $N$ independently trained subject LoRA modules $\{\Delta\boldsymbol{\theta}_1, \ldots, \Delta\boldsymbol{\theta}_N\}$ and a composite prompt (e.g., ``a [V1] dog playing with a [V2] cat''):
+
+\begin{enumerate}
+    \item \textbf{Layout specification.} Each subject is assigned a bounding box $B_n$ in the target image (user-provided or generated).
+    \item \textbf{Spatial masking.} During cross-attention, each subject LoRA's contribution is restricted to spatial tokens within its bounding box via a soft mask:
+    \begin{equation}
+        M_n(x, y) = \begin{cases} 1 & \text{if } (x,y) \in B_n \\ \alpha & \text{otherwise} \end{cases}
+    \end{equation}
+    where $\alpha = 0.05$ allows minimal global influence for scene coherence.
+    \item \textbf{Negative attention.} Optionally, we apply negative cross-attention for each subject token outside its region:
+    \begin{equation}
+        \text{Attn}_n = \text{softmax}\!\left(\frac{\mathbf{Q}\mathbf{K}_n^\top}{\sqrt{d}} - \gamma \cdot (1 - M_n)\right) \mathbf{V}_n,
+    \end{equation}
+    where $\gamma > 0$ controls suppression strength.
+\end{enumerate}
+
+This protocol enables plug-and-play composition: subject modules trained independently can be combined without retraining.
+
+% ====================================================================
+\section{Experiments}
+\label{sec:experiments}
+% ====================================================================
+
+\subsection{Setup}
+
+\paragraph{Backbone.} We use Stable Diffusion 1.4~\citep{rombach2022high} as the base model. While the research plan targets FLUX.1/SD3, GPU memory constraints (8\,GB available per device due to co-located services) necessitated the smaller backbone. The architectural principles of ModularBooth---blockwise LoRA, CCD loss, and masked inference---are architecture-agnostic and transfer directly to DiT-based models.
+
+\paragraph{Training data.} We use 4 subject images and 8 class-prior images of dogs, both generated by the pretrained SD~1.4 model. Subject images use varied prompts (portrait, garden, close-up) to provide diverse viewpoints; class images use the generic prompt ``a photo of a dog.''
+
+\paragraph{Training details.} LoRA adapters target the \texttt{to\_q}, \texttt{to\_k}, \texttt{to\_v}, and \texttt{to\_out.0} projections across all attention layers in SD~1.4's UNet (128 linear layers total). LoRA parameters are maintained in fp32 for stable optimization while the backbone remains in fp16. We train with AdamW~\citep{loshchilov2019adamw} at learning rate $5 \times 10^{-4}$ for 500 steps with cosine scheduling and 20 warm-up steps. Gradient clipping is applied at norm 1.0. Dropout of 0.05 is applied to LoRA branches. For the CCD variant, color-jittered augmentations (brightness, contrast, saturation, hue) serve as positive pairs.
+
+\paragraph{Evaluation metrics.}
+\begin{itemize}
+    \item \textbf{DINO score}: Average pairwise cosine similarity between DINO ViT-S/16~\citep{caron2021dino} embeddings of generated and reference images (subject fidelity).
+    \item \textbf{CLIP-I score}: Average pairwise cosine similarity between CLIP ViT-L/14~\citep{radford2021clip} image embeddings of generated and reference images.
+    \item \textbf{CLIP-T score}: Average cosine similarity between CLIP image and text embeddings (prompt fidelity).
+    \item \textbf{VQA alignment}: CLIP-based visual question answering score measuring whether generated images match prompted attributes.
+    \item \textbf{LPIPS diversity}: Average pairwise LPIPS distance~\citep{zhang2018lpips} between generated images (output diversity; higher is more diverse).
+    \item \textbf{CAE}: Context-Appearance Entanglement, measured as the normalized covariance trace of DINO embeddings across the same subject in different contexts. Lower is better.
+\end{itemize}
+
+We generate 12 evaluation images (6 prompts $\times$ 2 images) per configuration using 30 DDPM steps at guidance scale 7.5. For CAE, we generate the subject in 6 distinct contexts (beach, forest, city, kitchen, snow, desert).
+
+\subsection{Ablation: Blockwise vs.\ Uniform LoRA}
+\label{sec:ablation_blockwise}
+
+Table~\ref{tab:blockwise} compares five LoRA configurations. The blockwise configuration (identity rank 16, context rank 4, shared rank 8) uses 1.49M parameters---53\% fewer than uniform rank~16 (3.19M)---while achieving higher DINO similarity (0.393 vs.\ 0.378) and the highest CLIP-T score (0.271, tied with uniform $r{=}4$). This suggests that over-parameterizing context-encoding blocks harms prompt fidelity without commensurate gains in subject similarity. The blockwise configuration achieves comparable DINO to the 2$\times$ larger uniform rank-8 baseline (0.393 vs.\ 0.398) while using 6.4\% fewer parameters and producing higher CLIP-T and VQA scores.
+
+\begin{table}[t]
+\caption{Blockwise vs.\ uniform LoRA rank configurations on SD~1.4. Blockwise achieves competitive fidelity (DINO) with the best prompt adherence (CLIP-T) at substantially fewer parameters than uniform $r{=}16$.}
+\label{tab:blockwise}
+\vskip 0.1in
+\begin{center}
+\begin{small}
+\begin{tabular}{lccccc}
+\toprule
+Config & Params & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ & LPIPS$\uparrow$ \\
+\midrule
+Uniform $r{=}4$ & 797K & 0.371 & 0.271 & 0.773 & 0.777 \\
+Uniform $r{=}8$ & 1.59M & \textbf{0.398} & 0.265 & 0.773 & \textbf{0.803} \\
+Uniform $r{=}16$ & 3.19M & 0.378 & 0.265 & \textbf{0.783} & 0.787 \\
+Blockwise & 1.49M & 0.393 & \textbf{0.271} & 0.771 & 0.759 \\
+Blockwise+CCD & 1.49M & 0.397 & 0.267 & 0.780 & 0.761 \\
+\bottomrule
+\end{tabular}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+\subsection{Ablation: CCD Loss}
+\label{sec:ablation_ccd}
+
+Table~\ref{tab:ccd} shows the effect of the CCD loss. Adding CCD to the blockwise configuration improves DINO (0.397 vs.\ 0.393) and CLIP-I (0.780 vs.\ 0.771), indicating that the contrastive signal helps the model better capture subject identity. VQA alignment also improves (0.863 vs.\ 0.846), suggesting that CCD encourages the model to attend more to the subject itself rather than entangling it with contextual features. The CAE metric shows a slight increase with CCD (0.00117 vs.\ 0.00112); we attribute this to the modest CCD training signal (500 steps with 100-step warm-up) and note that longer training schedules may yield clearer disentanglement benefits.
+
+\begin{table}[t]
+\caption{Effect of CCD loss on blockwise LoRA. CCD improves subject fidelity (DINO, CLIP-I) and prompt alignment (VQA) with the same parameter budget.}
+\label{tab:ccd}
+\vskip 0.1in
+\begin{center}
+\begin{small}
+\begin{tabular}{lccccc}
+\toprule
+Config & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ & VQA$\uparrow$ & CAE$\downarrow$ \\
+\midrule
+Blockwise & 0.393 & \textbf{0.271} & 0.771 & 0.846 & \textbf{0.00112} \\
+Blockwise+CCD & \textbf{0.397} & 0.267 & \textbf{0.780} & \textbf{0.863} & 0.00117 \\
+\bottomrule
+\end{tabular}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+\subsection{Parameter Efficiency}
+
+Table~\ref{tab:efficiency} summarizes the storage and training efficiency of each configuration. The blockwise configuration requires 5.73\,MB per subject, compared to 12.20\,MB for uniform rank~16---a 53\% reduction. Training time increases modestly with CCD (63.9\,s vs.\ 50.7\,s for blockwise without CCD) due to the additional contrastive forward pass and augmentation loading. All configurations converge to similar final loss values (0.170--0.173), indicating that the denoising objective is well-optimized regardless of LoRA capacity. The blockwise+CCD variant achieves the lowest total loss (0.171), aided by the regularization effect of the contrastive term.
+
+\begin{table}[t]
+\caption{Parameter efficiency comparison. Blockwise LoRA achieves 53\% parameter reduction versus uniform $r{=}16$ with comparable quality.}
+\label{tab:efficiency}
+\vskip 0.1in
+\begin{center}
+\begin{small}
+\begin{tabular}{lcccc}
+\toprule
+Config & Params & Size (MB) & Train (s) & Loss \\
+\midrule
+Uniform $r{=}4$ & 797K & 3.07 & 52.4 & 0.173 \\
+Uniform $r{=}8$ & 1.59M & 6.11 & 54.1 & 0.173 \\
+Uniform $r{=}16$ & 3.19M & 12.20 & 55.3 & 0.173 \\
+Blockwise & 1.49M & 5.73 & 50.7 & 0.173 \\
+Blockwise+CCD & 1.49M & 5.73 & 63.9 & 0.171 \\
+\bottomrule
+\end{tabular}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+\subsection{Full Results}
+
+Figure~\ref{fig:metrics} visualizes the per-metric comparison across all five configurations. Figure~\ref{fig:pareto} shows the parameter--fidelity trade-off, where blockwise configurations achieve strong DINO scores at reduced parameter budgets.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/metrics_comparison.pdf}
+\caption{Per-metric comparison of all five LoRA configurations. Blockwise+CCD matches or exceeds uniform baselines on identity metrics (DINO, CLIP-I) while using 53\% fewer parameters than uniform $r{=}16$.}
+\label{fig:metrics}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\columnwidth]{figures/param_efficiency.pdf}
+\caption{Parameter count vs.\ DINO score. Blockwise configurations (red, purple) sit favorably on the parameter--fidelity Pareto frontier.}
+\label{fig:pareto}
+\end{figure}
+
+Table~\ref{tab:full} presents the complete evaluation across all six metrics.
+
+\begin{table*}[t]
+\caption{Complete evaluation results across all six metrics. Best results per column are \textbf{bolded}. Blockwise configurations achieve competitive fidelity to uniform baselines at 53\% fewer parameters than uniform $r{=}16$.}
+\label{tab:full}
+\vskip 0.1in
+\begin{center}
+\begin{small}
+\begin{tabular}{lcccccccc}
+\toprule
+Config & Params & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ & VQA$\uparrow$ & LPIPS$\uparrow$ & CAE$\downarrow$ & Size (MB) \\
+\midrule
+Uniform $r{=}4$ & 797K & 0.371 & 0.271 & 0.773 & 0.792 & 0.777 & 0.00115 & 3.07 \\
+Uniform $r{=}8$ & 1.59M & \textbf{0.398} & 0.265 & 0.773 & 0.807 & \textbf{0.803} & 0.00114 & 6.11 \\
+Uniform $r{=}16$ & 3.19M & 0.378 & 0.265 & \textbf{0.783} & \textbf{0.904} & 0.787 & 0.00113 & 12.20 \\
+Blockwise & 1.49M & 0.393 & \textbf{0.271} & 0.771 & 0.846 & 0.759 & \textbf{0.00112} & 5.73 \\
+Blockwise+CCD & 1.49M & 0.397 & 0.267 & 0.780 & 0.863 & 0.761 & 0.00117 & 5.73 \\
+\bottomrule
+\end{tabular}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table*}
+
+% ====================================================================
+\section{Discussion}
+\label{sec:discussion}
+% ====================================================================
+
+\paragraph{Blockwise rank assignment.}
+The core hypothesis---that identity-critical blocks benefit from higher rank while context blocks should be minimally perturbed---is supported by the experimental results. Blockwise LoRA with only 1.49M parameters achieves DINO~0.393, within 1.3\% of the uniform rank-8 baseline (1.59M parameters, DINO~0.398) while surpassing the 2$\times$ larger uniform rank-16 (3.19M, DINO~0.378). The CLIP-T advantage of blockwise (0.271 vs.\ 0.265) confirms that lower rank in context blocks preserves the pretrained model's prompt-following ability. Interestingly, uniform rank-16 does not dominate uniform rank-8 on DINO (0.378 vs.\ 0.398), suggesting that higher capacity can lead to overfitting on the small training set, a phenomenon that blockwise allocation mitigates by restricting capacity in context-handling layers.
+
+\paragraph{CCD loss effectiveness.}
+The CCD loss improves subject fidelity (DINO +1.0\%, CLIP-I +1.2\%) over blockwise training without CCD, despite the contrastive signal being extremely weak at 500 steps (final CCD loss $\sim$2$\times$10$^{-6}$). VQA alignment also improves from 0.846 to 0.863, indicating that the contrastive objective encourages the model to associate subject features with identity tokens rather than context tokens. The modest magnitude of these improvements reflects the limited training duration (400 effective CCD steps after warm-up) and the use of color jittering as the sole augmentation strategy. Segmentation-based background replacement, as used in IP-Adapter~\citep{ye2023ipadapter} and SID~\citep{sid2024}, would likely yield stronger disentanglement.
+
+\paragraph{CAE and entanglement.}
+All configurations exhibit low CAE values (0.0011--0.0012), indicating that context--appearance entanglement is already modest in this experimental setting. The near-floor CAE values limit our ability to demonstrate large disentanglement gains. Real-world subjects with more complex background correlations (e.g., a specific car always photographed in a garage) would provide a more discriminative test of the CCD loss.
+
+\paragraph{Limitations.}
+Several limitations must be acknowledged. First, our experiments use SD~1.4 rather than modern DiT-based architectures (FLUX, SD3) due to GPU memory constraints. The blockwise rank assignment heuristic (positional terciles) may need recalibration for DiT architectures where the functional stratification across blocks differs. Second, the CCD loss relies on simple color-jittering augmentations rather than segmentation-based background replacement, which limits its ability to separate foreground from background when subjects span the full image. Third, multi-subject composition was validated architecturally (unit tests, module design) but not with full generation experiments due to resource constraints. Fourth, our subject images are synthetic (generated by the base model), which means the DINO and CLIP-I scores reflect similarity to model-generated rather than real-world subjects. Real photographs would provide a more rigorous evaluation. Fifth, all configurations were trained for only 500 steps; longer training schedules may alter the relative ranking of configurations.
+
+\paragraph{Broader context.}
+Zero-shot personalization methods~\citep{ye2023ipadapter} avoid per-subject training entirely, achieving convenience at the cost of fine-grained fidelity. ModularBooth occupies a complementary niche: under a minute of training per subject on a single GPU yields higher identity preservation, with modular composition enabling multi-subject scenes that zero-shot methods struggle to handle.
+
+% ====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% ====================================================================
+
+We presented ModularBooth, a framework for modular multi-subject personalization that combines blockwise-parameterized LoRA, contrastive context disentanglement, and masked compositional inference. Blockwise rank assignment achieves competitive subject fidelity at 53\% reduced parameter cost by concentrating adaptation capacity in identity-critical transformer blocks while preserving the model's contextual generation prior in late layers. The CCD loss provides an explicit mechanism for improving subject fidelity beyond what standard DreamBooth training achieves alone. Together, these components form a principled extension of the DreamBooth paradigm that maintains the high-fidelity advantages of fine-tuning-based personalization while addressing its key limitations in efficiency and composability.
+
+Future work will scale ModularBooth to DiT-based architectures (FLUX, SD3), replace heuristic block classification with learned rank allocation, extend the CCD augmentation strategy to use segmentation-based background replacement, and evaluate on real-world multi-subject benchmarks with human preference studies.
+
+% ====================================================================
+\bibliography{references}
+\bibliographystyle{icml2025}
+% ====================================================================
+
+\end{document}

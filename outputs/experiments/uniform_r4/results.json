@@ -1,0 +1,38 @@
+{
+  "name": "uniform_r4",
+  "block_config": {
+    "0": "shared",
+    "1": "shared",
+    "2": "shared",
+    "3": "shared"
+  },
+  "config": {
+    "name": "uniform_r4",
+    "identity_rank": 4,
+    "context_rank": 4,
+    "shared_rank": 4,
+    "num_steps": 500,
+    "learning_rate": 0.0005
+  },
+  "training_time_s": 52.433799028396606,
+  "final_loss_total": 0.17334882354736328,
+  "final_loss_diffusion": 0.1975124381973358,
+  "final_loss_ppl": 0.16123073451869838,
+  "final_loss_ccd": 0,
+  "lora_params": 797184,
+  "lora_param_breakdown": {
+    "identity": 0,
+    "context": 0,
+    "shared": 797184
+  },
+  "lora_size_mb": 3.0732803344726562,
+  "lora_b_norm": 0.42624377156607807,
+  "metrics": {
+    "dino_score": 0.3711022734642029,
+    "cae": 0.0011470939498394728,
+    "clip_t_score": 0.2706497609615326,
+    "clip_i_score": 0.7724551558494568,
+    "vqa_alignment": 0.7916666666666666,
+    "lpips_diversity": 0.7771995717828925
+  }
+}

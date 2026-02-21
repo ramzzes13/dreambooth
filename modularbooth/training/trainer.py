@@ -906,8 +906,11 @@ class ModularBoothTrainer:
         elif hasattr(ccd_loss_module, "ccd_loss"):
             ccd_loss_module = ccd_loss_module.ccd_loss
 
+        # Ensure all features share the same dtype (fp32 LoRA can produce mixed).
         ccd_loss = ccd_loss_module(
-            subject_features, positive_features, negative_features
+            subject_features.float(),
+            positive_features.float(),
+            negative_features.float(),
         )
         return ccd_loss
 
