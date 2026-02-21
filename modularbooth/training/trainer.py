@@ -342,6 +342,9 @@ class ModularBoothTrainer:
         """
         # Freeze backbone; only LoRA is trainable.
         self.model_wrapper.denoiser.requires_grad_(False)
+        # Re-enable gradients for LoRA parameters (they were frozen with the backbone).
+        for param in self.lora.parameters():
+            param.requires_grad_(True)
         self.lora.train()
 
         # Seed RNG for reproducibility.
@@ -896,9 +899,11 @@ class ModularBoothTrainer:
             )
 
         # Delegate to loss_fn (expected to be CCDLoss or ModularBoothLoss
-        # with a .ccd_loss attribute).
+        # with a .ccd attribute).
         ccd_loss_module = self.loss_fn
-        if hasattr(ccd_loss_module, "ccd_loss"):
+        if hasattr(ccd_loss_module, "ccd"):
+            ccd_loss_module = ccd_loss_module.ccd
+        elif hasattr(ccd_loss_module, "ccd_loss"):
             ccd_loss_module = ccd_loss_module.ccd_loss
 
         ccd_loss = ccd_loss_module(
