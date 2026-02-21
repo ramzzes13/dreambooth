@@ -54,4 +54,65 @@ Started: Sat Feb 21 09:43:48 PM MSK 2026
 - 74569fc: Add subprocess experiment runner and figure generation
 - 1a8babc: Complete ICML paper with real experiment results and figures
 
+---
+
+## Session 2 (Feb 21 ~23:00+ MSK)
+
+### Completed:
+1. **10 new experiments run** (all on SD 1.4, real training, real metrics):
+   - Rank sensitivity ablation (id_rank 8, 12, 24, 32 with ctx=4, shared=8)
+   - CCD lambda ablation (lambda 0.1, 0.5, 1.0 in addition to existing 0.3)
+   - Longer training (1000 steps): blockwise, blockwise+CCD, uniform_r8
+
+2. **Key new finding - CCD regularization effect**:
+   - At 1000 steps WITHOUT CCD, VQA degrades significantly (blockwise: -10.9%)
+   - At 1000 steps WITH CCD, VQA is preserved (0.863) while DINO improves (+6.0% to 0.421)
+   - CCD acts primarily as a regularizer preventing overfitting at longer training
+
+3. **Rank sensitivity results**:
+   - DINO peaks at id_rank=16 (0.392) and plateaus/degrades at higher ranks
+   - CLIP-T remains stable across ranks, confirming identity capacity doesn't harm prompt fidelity
+   - Optimal config confirmed: id=16, ctx=4, shared=8
+
+4. **CCD lambda results**:
+   - lambda=0.3 achieves best DINO+CLIP-T+VQA balance
+   - lambda=0.1 too weak (minimal effect), lambda=1.0 too strong (harms DINO)
+
+5. **Paper expanded to 11 pages** (9 main + references + appendix):
+   - Added Algorithm 1 (training pseudocode)
+   - Added 3 new experiment sections (rank sensitivity, CCD lambda, training duration)
+   - Added 3 new tables (rank_sensitivity, ccd_lambda, training_steps)
+   - Added 3 new figures (rank_sensitivity.pdf, training_duration.pdf, ccd_lambda.pdf)
+   - Expanded related work (5 paragraphs: subject-driven, parameter-efficient, multi-subject, DiT, contrastive)
+   - Added Discussion section with rank sensitivity and CCD regularization analysis
+   - Added Appendix A with implementation details (gradient flow, mixed-precision, evaluation, reproducibility)
+   - Updated abstract, intro, conclusion with new findings
+   - Total: 8 tables, 7 figures, 27 citations
+
+6. **All citations verified** as real papers with correct authors, years, venues
+
+7. **All paper numbers verified** against actual results.json files:
+   - Found and fixed 7 rounding discrepancies (e.g., DINO 0.393→0.392 for blockwise_no_ccd)
+   - Fixed cascading percentage calculations
+
+8. **Paper compiles cleanly** with pdflatex + bibtex (no warnings besides standard overfull hboxes)
+
+9. **All 55 tests still passing** (53 unit + 2 GPU E2E)
+
+### Updated Results (15 total experiments):
+- Best overall: blockwise+CCD @ 1000 steps: DINO=0.421, CLIP-I=0.803, VQA=0.863, 1.49M params
+- Blockwise LoRA: 53% parameter reduction vs uniform r=16 with comparable/better fidelity
+- CCD: +1.3% DINO at 500 steps, +6.6% DINO at 1000 steps (regularization effect)
+
+### What Remains (unchanged from Session 1):
+- Scale to DiT architectures (FLUX/SD3) - blocked by GPU memory
+- Multi-subject composition full generation experiments
+- Real-world subject images
+- Human preference studies
+
+### Git Commits:
+- ccbef44: Add 10 additional experiments, expand paper to 11 pages
+- acc461f: Add experiment results data
+- 693a178: Fix rounding in paper tables to match actual experiment data
+
 <promise>COMPLETE</promise>
