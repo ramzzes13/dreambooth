@@ -38,7 +38,7 @@ We introduce \textbf{ModularBooth}, a framework that addresses three limitations
 (1)~context--appearance entanglement, where the subject's appearance changes with the prompted background;
 (2)~inefficient parameterization that overwrites contextual knowledge uniformly across all network blocks; and
 (3)~the absence of principled multi-subject composition from independently trained modules.
-ModularBooth assigns adaptive LoRA ranks to different transformer blocks based on their functional role---identity-encoding blocks receive higher rank while context-encoding blocks receive lower rank---reducing trainable parameters by 53\% compared to uniform rank-16 baselines while achieving higher subject fidelity (DINO 0.393 vs.\ 0.378).
+ModularBooth assigns adaptive LoRA ranks to different transformer blocks based on their functional role---identity-encoding blocks receive higher rank while context-encoding blocks receive lower rank---reducing trainable parameters by 53\% compared to uniform rank-16 baselines while achieving higher subject fidelity (DINO 0.392 vs.\ 0.378).
 A contrastive context disentanglement (CCD) loss operating on intermediate features explicitly separates subject identity from background context during training.
 At inference, a token-aware cross-attention masking protocol enables plug-and-play composition of multiple independently trained subject modules.
 Experiments on Stable Diffusion 1.4 with six evaluation metrics validate that blockwise parameterization matches uniform-rank fidelity at reduced cost, and that CCD further improves subject fidelity (DINO~0.397, CLIP-I~0.780) relative to blockwise training without CCD.
@@ -286,7 +286,7 @@ All metrics are computed as averages over pairwise comparisons between generated
 \label{sec:ablation_blockwise}
 
 Table~\ref{tab:blockwise} compares five LoRA configurations spanning three uniform ranks (4, 8, 16) and two blockwise variants (with and without CCD).
-The blockwise configuration ($r_{\text{id}}{=}16$, $r_{\text{ctx}}{=}4$, $r_{\text{sh}}{=}8$) uses 1.49M parameters---53\% fewer than uniform rank~16 (3.19M)---while achieving higher DINO (0.393 vs.\ 0.378) and the highest CLIP-T (0.271, tied with uniform $r{=}4$).
+The blockwise configuration ($r_{\text{id}}{=}16$, $r_{\text{ctx}}{=}4$, $r_{\text{sh}}{=}8$) uses 1.49M parameters---53\% fewer than uniform rank~16 (3.19M)---while achieving higher DINO (0.392 vs.\ 0.378) and the highest CLIP-T (0.271, tied with uniform $r{=}4$).
 This confirms our hypothesis that over-parameterizing context-encoding blocks harms prompt fidelity without commensurate identity gains.
 
 An interesting finding is that uniform rank-16 underperforms uniform rank-8 on DINO (0.378 vs.\ 0.398), despite having twice the parameters.
@@ -304,10 +304,10 @@ Blockwise achieves competitive fidelity (DINO) with the best prompt adherence (C
 \toprule
 Config & Params & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ & LPIPS$\uparrow$ \\
 \midrule
-Uniform $r{=}4$ & 797K & 0.371 & 0.271 & 0.773 & 0.777 \\
+Uniform $r{=}4$ & 797K & 0.371 & 0.271 & 0.772 & 0.777 \\
 Uniform $r{=}8$ & 1.59M & \textbf{0.398} & 0.265 & 0.773 & \textbf{0.803} \\
 Uniform $r{=}16$ & 3.19M & 0.378 & 0.265 & \textbf{0.783} & 0.787 \\
-Blockwise & 1.49M & 0.393 & \textbf{0.271} & 0.771 & 0.759 \\
+Blockwise & 1.49M & 0.392 & \textbf{0.271} & 0.771 & 0.758 \\
 Blockwise+CCD & 1.49M & 0.397 & 0.267 & 0.780 & 0.761 \\
 \bottomrule
 \end{tabular}
@@ -320,7 +320,7 @@ Blockwise+CCD & 1.49M & 0.397 & 0.267 & 0.780 & 0.761 \\
 \label{sec:ablation_ccd}
 
 Table~\ref{tab:ccd} isolates the effect of the CCD loss on the blockwise configuration.
-Adding CCD improves DINO (+1.0\%), CLIP-I (+1.2\%), and VQA alignment (+2.0\%) with no additional parameters.
+Adding CCD improves DINO (+1.3\%), CLIP-I (+1.2\%), and VQA alignment (+2.0\%) with no additional parameters.
 The CCD loss encourages the model to associate subject-specific features with the identity token rather than entangling them with contextual features, yielding better subject reproduction and improved semantic alignment.
 
 The CAE metric shows a slight increase with CCD (0.00117 vs.\ 0.00112).
@@ -339,7 +339,7 @@ CCD improves subject fidelity (DINO, CLIP-I) and prompt alignment (VQA) with zer
 \toprule
 Config & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ & VQA$\uparrow$ & CAE$\downarrow$ \\
 \midrule
-Blockwise & 0.393 & \textbf{0.271} & 0.771 & 0.846 & \textbf{0.00112} \\
+Blockwise & 0.392 & \textbf{0.271} & 0.771 & 0.846 & \textbf{0.00112} \\
 Block.+CCD & \textbf{0.397} & 0.267 & \textbf{0.780} & \textbf{0.863} & 0.00117 \\
 \bottomrule
 \end{tabular}
@@ -355,10 +355,10 @@ To understand how the identity-block rank affects the fidelity--efficiency trade
 Table~\ref{tab:rank_sensitivity} reports the results.
 
 Figure~\ref{fig:rank_sensitivity} and Table~\ref{tab:rank_sensitivity} show the results.
-DINO increases from 0.378 at $r_{\text{id}}{=}8$ to 0.393 at $r_{\text{id}}{=}16$, then plateaus (0.382 at rank~24, 0.392 at rank~32).
+DINO increases from 0.378 at $r_{\text{id}}{=}8$ to 0.392 at $r_{\text{id}}{=}16$, then plateaus (0.382 at rank~24, 0.392 at rank~32).
 CLIP-T peaks at $r_{\text{id}}{=}16$ (0.271) and remains stable across ranks, indicating that the identity-block rank has minimal impact on prompt fidelity when context blocks remain at low rank.
 Parameters scale from 1.24M to 2.00M across the range.
-Rank~16 provides the best DINO-per-parameter ratio: 0.393 DINO at 1.49M parameters, versus 0.392 DINO at 2.00M for rank~32 (34\% more parameters for equivalent fidelity).
+Rank~16 provides the best DINO-per-parameter ratio: 0.392 DINO at 1.49M parameters, versus 0.392 DINO at 2.00M for rank~32 (34\% more parameters for equivalent fidelity).
 
 \begin{figure}[t]
 \centering
@@ -382,7 +382,7 @@ $r_{\text{id}}$ & Params & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ 
 \midrule
 8 & 1.24M & 0.378 & 0.268 & \textbf{0.783} & 0.833 & \textbf{0.00108} \\
 12 & 1.37M & 0.381 & 0.270 & 0.780 & 0.831 & 0.00119 \\
-16 & 1.49M & \textbf{0.393} & \textbf{0.271} & 0.771 & 0.846 & 0.00112 \\
+16 & 1.49M & \textbf{0.392} & \textbf{0.271} & 0.771 & 0.846 & 0.00112 \\
 24 & 1.74M & 0.382 & 0.269 & 0.775 & 0.865 & 0.00116 \\
 32 & 2.00M & 0.392 & 0.270 & 0.777 & \textbf{0.879} & 0.00106 \\
 \bottomrule
@@ -414,7 +414,7 @@ $\lambda_2{=}0.3$ achieves the best balance between subject fidelity and prompt 
 \toprule
 $\lambda_2$ & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ & VQA$\uparrow$ & CAE$\downarrow$ & LPIPS$\uparrow$ \\
 \midrule
-0.0 & 0.393 & \textbf{0.271} & 0.771 & 0.846 & \textbf{0.00112} & 0.759 \\
+0.0 & 0.392 & \textbf{0.271} & 0.771 & 0.846 & \textbf{0.00112} & 0.758 \\
 0.1 & 0.380 & 0.266 & \textbf{0.783} & 0.725 & 0.00122 & 0.765 \\
 0.3 & 0.397 & 0.267 & 0.780 & \textbf{0.863} & 0.00117 & 0.761 \\
 0.5 & 0.367 & 0.268 & 0.776 & 0.825 & 0.00119 & 0.785 \\
@@ -432,7 +432,7 @@ $\lambda_2$ & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ & VQA$\uparro
 We compare 500-step and 1000-step training for three configurations: uniform $r{=}8$, blockwise, and blockwise+CCD.
 Table~\ref{tab:training_steps} reveals a striking interaction between training duration and CCD.
 
-Without CCD, longer training degrades prompt alignment: blockwise at 1000 steps drops CLIP-T from 0.271 to 0.258 ($-4.8\%$) and VQA from 0.846 to 0.754 ($-10.9\%$), despite increasing DINO from 0.393 to 0.418.
+Without CCD, longer training degrades prompt alignment: blockwise at 1000 steps drops CLIP-T from 0.271 to 0.258 ($-4.8\%$) and VQA from 0.846 to 0.754 ($-10.9\%$), despite increasing DINO from 0.392 to 0.418 ($+6.6\%$).
 The uniform $r{=}8$ baseline similarly degrades at 1000 steps: DINO drops from 0.398 to 0.378, indicating overfitting without the blockwise structure's implicit regularization.
 
 With CCD, the blockwise configuration maintains VQA at 1000 steps (0.863 $\to$ 0.863, unchanged) while still gaining DINO (+6.0\%, 0.397 $\to$ 0.421) and CLIP-I (+2.9\%, 0.780 $\to$ 0.803).
@@ -467,7 +467,7 @@ Config & Steps & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ & VQA$\upa
 Unif.\ $r{=}8$ & 500 & 0.398 & 0.265 & 0.773 & 0.807 & 0.00114 \\
 Unif.\ $r{=}8$ & 1000 & 0.378 & 0.267 & 0.774 & 0.814 & \textbf{0.00101} \\
 \midrule
-Blockwise & 500 & 0.393 & \textbf{0.271} & 0.771 & 0.846 & 0.00112 \\
+Blockwise & 500 & 0.392 & \textbf{0.271} & 0.771 & 0.846 & 0.00112 \\
 Blockwise & 1000 & 0.418 & 0.258 & 0.768 & 0.754 & \textbf{0.00100} \\
 \midrule
 Blk.+CCD & 500 & 0.397 & 0.267 & 0.780 & \textbf{0.863} & 0.00117 \\
@@ -545,10 +545,10 @@ Blockwise+CCD achieves the strongest combined profile: near-best DINO (0.397), b
 \toprule
 Config & Params & DINO$\uparrow$ & CLIP-T$\uparrow$ & CLIP-I$\uparrow$ & VQA$\uparrow$ & LPIPS$\uparrow$ & CAE$\downarrow$ & Size (MB) \\
 \midrule
-Uniform $r{=}4$ & 797K & 0.371 & 0.271 & 0.773 & 0.792 & 0.777 & 0.00115 & 3.07 \\
+Uniform $r{=}4$ & 797K & 0.371 & 0.271 & 0.772 & 0.792 & 0.777 & 0.00115 & 3.07 \\
 Uniform $r{=}8$ & 1.59M & \textbf{0.398} & 0.265 & 0.773 & 0.807 & \textbf{0.803} & 0.00114 & 6.11 \\
 Uniform $r{=}16$ & 3.19M & 0.378 & 0.265 & \textbf{0.783} & \textbf{0.904} & 0.787 & 0.00113 & 12.20 \\
-Blockwise & 1.49M & 0.393 & \textbf{0.271} & 0.771 & 0.846 & 0.759 & \textbf{0.00112} & 5.73 \\
+Blockwise & 1.49M & 0.392 & \textbf{0.271} & 0.771 & 0.846 & 0.758 & \textbf{0.00112} & 5.73 \\
 Blockwise+CCD & 1.49M & 0.397 & 0.267 & 0.780 & 0.863 & 0.761 & 0.00117 & 5.73 \\
 \bottomrule
 \end{tabular}
@@ -564,7 +564,7 @@ Blockwise+CCD & 1.49M & 0.397 & 0.267 & 0.780 & 0.863 & 0.761 & 0.00117 & 5.73 \
 
 \paragraph{Blockwise rank assignment.}
 The core hypothesis---that identity-critical blocks benefit from higher rank while context blocks should be minimally perturbed---is supported by our experiments.
-Blockwise LoRA with 1.49M parameters achieves DINO~0.393, within 1.3\% of the uniform rank-8 baseline (1.59M, DINO~0.398) while surpassing the $2\times$ larger uniform rank-16 (3.19M, DINO~0.378).
+Blockwise LoRA with 1.49M parameters achieves DINO~0.392, within 1.5\% of the uniform rank-8 baseline (1.59M, DINO~0.398) while surpassing the $2\times$ larger uniform rank-16 (3.19M, DINO~0.378).
 The CLIP-T advantage of blockwise (0.271 vs.\ 0.265) confirms that lower rank in context blocks preserves the pretrained model's prompt-following ability.
 
 The non-monotonic relationship between uniform rank and DINO---rank-16 underperforming rank-8---is noteworthy.
@@ -572,7 +572,7 @@ With only 4 training images and 500 steps, the additional capacity in rank-16 ap
 Blockwise allocation addresses this by design: context-encoding blocks receive rank~4, insufficient to memorize complex background patterns, while identity blocks receive rank~16 to capture fine-grained subject details.
 
 \paragraph{CCD loss effectiveness.}
-At 500 steps, the CCD loss provides modest gains: DINO +1.0\%, CLIP-I +1.2\%, VQA +2.0\% over blockwise training without CCD.
+At 500 steps, the CCD loss provides modest gains: DINO +1.3\%, CLIP-I +1.2\%, VQA +2.0\% over blockwise training without CCD.
 The CCD loss weight ablation (Table~\ref{tab:ccd_lambda}) reveals a non-monotonic relationship: $\lambda_2{=}0.1$ and $\lambda_2{=}0.5$ both degrade performance relative to no CCD, while $\lambda_2{=}0.3$ and $\lambda_2{=}1.0$ improve DINO.
 This sensitivity suggests the contrastive signal must be strong enough to provide meaningful gradient information but balanced against the denoising objective.
 
@@ -606,7 +606,7 @@ The blockwise parameterization additionally opens a path toward adaptive rank al
 
 We presented ModularBooth, a framework for modular multi-subject personalization that combines blockwise-parameterized LoRA, contrastive context disentanglement, and masked compositional inference.
 Blockwise rank assignment achieves competitive subject fidelity at 53\% reduced parameter cost by concentrating adaptation capacity in identity-critical transformer blocks.
-The CCD loss provides dual value: at 500 steps, it improves subject fidelity metrics (DINO +1.0\%, CLIP-I +1.2\%); at 1000 steps, it acts as a regularizer that prevents prompt-alignment degradation (maintaining VQA at 0.863) while enabling significant DINO improvement (+6.0\% to 0.421).
+The CCD loss provides dual value: at 500 steps, it improves subject fidelity metrics (DINO +1.3\%, CLIP-I +1.2\%); at 1000 steps, it acts as a regularizer that prevents prompt-alignment degradation (maintaining VQA at 0.863) while enabling significant DINO improvement (+6.0\% to 0.421).
 The rank sensitivity ablation confirms that $r_{\text{id}}{=}16$ is the efficiency sweet spot, and the CCD weight ablation identifies $\lambda_2{=}0.3$ as the optimal balance.
 The masked compositional inference protocol enables plug-and-play multi-subject generation from independently trained modules without retraining.
 
