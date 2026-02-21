@@ -1,0 +1,232 @@
+% ====================================================================
+% Core references -- DreamBooth and foundations
+% ====================================================================
+
+@inproceedings{ruiz2023dreambooth,
+  title={{DreamBooth}: Fine Tuning Text-to-Image Diffusion Models for Subject-Driven Generation},
+  author={Ruiz, Nataniel and Li, Yuanzhen and Jampani, Varun and Pritch, Yael and Rubinstein, Michael and Aberman, Kfir},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages={22500--22510},
+  year={2023}
+}
+
+@inproceedings{gal2022textual,
+  title={An Image is Worth One Word: Personalizing Text-to-Image Generation using Textual Inversion},
+  author={Gal, Rinon and Alaluf, Yuval and Atzmon, Yuval and Patashnik, Or and Bermano, Amit Haim and Chechik, Gal and Cohen-Or, Daniel},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2023}
+}
+
+@inproceedings{kumari2023custom,
+  title={Multi-Concept Customization of Text-to-Image Diffusion},
+  author={Kumari, Nupur and Zhang, Bingliang and Zhang, Richard and Shechtman, Eli and Zhu, Jun-Yan},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages={1931--1941},
+  year={2023}
+}
+
+% ====================================================================
+% LoRA and parameter-efficient adaptation
+% ====================================================================
+
+@inproceedings{hu2022lora,
+  title={{LoRA}: Low-Rank Adaptation of Large Language Models},
+  author={Hu, Edward J. and Shen, Yelong and Wallis, Phillip and Allen-Zhu, Zeyuan and Li, Yuanzhi and Wang, Shean and Wang, Lu and Chen, Weizhu},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2022}
+}
+
+@article{zhu2025blocklora,
+  title={Modular Customization of Diffusion Models via Blockwise-Parameterized Low-Rank Adaptation},
+  author={Zhu, Mingkang and Chen, Xi and Wang, Zhongdao and Yu, Bei and Zhao, Hengshuang and Jia, Jiaya},
+  journal={arXiv preprint arXiv:2503.08575},
+  year={2025}
+}
+
+@inproceedings{tara2026,
+  title={{TARA}: Token-Aware {LoRA} for Composable Personalization in Diffusion Models},
+  author={Peng, Yuqi and Zheng, Lingtao and Yang, Yufeng and Huang, Yi and Yan, Mingfu and Liu, Jianzhuang and Chen, Shifeng},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence (AAAI)},
+  year={2026}
+}
+
+@inproceedings{loraclr2025,
+  title={{LoRACLR}: Contrastive Adaptation for Customization of Diffusion Models},
+  author={Simsar, Enis and Hofmann, Thomas and Tombari, Federico and Yanardag, Pinar},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year={2025}
+}
+
+% ====================================================================
+% Diffusion model architectures
+% ====================================================================
+
+@inproceedings{rombach2022high,
+  title={High-Resolution Image Synthesis with Latent Diffusion Models},
+  author={Rombach, Robin and Blattmann, Andreas and Lorenz, Dominik and Esser, Patrick and Ommer, Bj{\"o}rn},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages={10684--10695},
+  year={2022}
+}
+
+@inproceedings{peebles2023dit,
+  title={Scalable Diffusion Models with Transformers},
+  author={Peebles, William and Xie, Saining},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  pages={4195--4205},
+  year={2023}
+}
+
+@inproceedings{esser2024scaling,
+  title={Scaling Rectified Flow Transformers for High-Resolution Image Synthesis},
+  author={Esser, Patrick and Kulal, Sumith and Blattmann, Andreas and Entezari, Rahim and M{\"u}ller, Jonas and Saini, Harry and Levi, Yam and Lorenz, Dominik and Sauer, Axel and Boesel, Frederic and Podell, Dustin and Dockhorn, Tim and English, Zion and Lacey, Kyle and Goodwin, Alex and Marek, Yannik and Rombach, Robin},
+  booktitle={Proceedings of the International Conference on Machine Learning (ICML)},
+  year={2024}
+}
+
+@article{ho2020denoising,
+  title={Denoising Diffusion Probabilistic Models},
+  author={Ho, Jonathan and Jain, Ajay and Abbeel, Pieter},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={6840--6851},
+  year={2020}
+}
+
+@article{saharia2022photorealistic,
+  title={Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding},
+  author={Saharia, Chitwan and Chan, William and Saxena, Saurabh and Li, Lala and Whang, Jay and Denton, Emily L and Ghasemipour, Seyed Kamyar Seyed and Gontijo-Lopes, Raphael and Karagol Ayan, Burcu and Salimans, Tim and Ho, Jonathan and Fleet, David J and Norouzi, Mohammad},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={36479--36494},
+  year={2022}
+}
+
+@misc{blackforestlabs2024flux,
+  title={{FLUX.1}},
+  author={{Black Forest Labs}},
+  year={2024},
+  url={https://blackforestlabs.ai/announcing-black-forest-labs/}
+}
+
+% ====================================================================
+% Evaluation models and metrics
+% ====================================================================
+
+@inproceedings{caron2021dino,
+  title={Emerging Properties in Self-Supervised Vision Transformers},
+  author={Caron, Mathilde and Touvron, Hugo and Misra, Ishan and J{\'e}gou, Herv{\'e} and Mairal, Julien and Bojanowski, Piotr and Joulin, Armand},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  pages={9650--9660},
+  year={2021}
+}
+
+@article{oquab2024dinov2,
+  title={{DINOv2}: Learning Robust Visual Features without Supervision},
+  author={Oquab, Maxime and Darcet, Timoth{\'e}e and Moutakanni, Th{\'e}o and Vo, Huy and Szafraniec, Marc and Khalidov, Vasil and Fernandez, Pierre and Haziza, Daniel and Massa, Francisco and El-Nouby, Alaaeldin and others},
+  journal={Transactions on Machine Learning Research},
+  year={2024}
+}
+
+@article{radford2021clip,
+  title={Learning Transferable Visual Models From Natural Language Supervision},
+  author={Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and others},
+  journal={Proceedings of the International Conference on Machine Learning (ICML)},
+  pages={8748--8763},
+  year={2021}
+}
+
+@inproceedings{zhang2018lpips,
+  title={The Unreasonable Effectiveness of Deep Features as a Perceptual Metric},
+  author={Zhang, Richard and Isola, Phillip and Efros, Alexei A and Shechtman, Eli and Wang, Oliver},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year={2018}
+}
+
+% ====================================================================
+% Segmentation
+% ====================================================================
+
+@inproceedings{kirillov2023segment,
+  title={Segment Anything},
+  author={Kirillov, Alexander and Mintun, Eric and Ravi, Nikhila and Mao, Hanzi and Rolland, Chloe and Gustafson, Laura and Xiao, Tete and Whitehead, Spencer and Berg, Alexander C. and Lo, Wan-Yen and Doll{\'a}r, Piotr and Girshick, Ross},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  pages={3992--4003},
+  year={2023}
+}
+
+% ====================================================================
+% Multi-subject and related personalization work
+% ====================================================================
+
+@article{ye2023ipadapter,
+  title={{IP-Adapter}: Text Compatible Image Prompt Adapter for Text-to-Image Diffusion Models},
+  author={Ye, Hu and Zhang, Jun and Liu, Sibo and Han, Xiao and Yang, Wei},
+  journal={arXiv preprint arXiv:2308.06721},
+  year={2023}
+}
+
+@inproceedings{mudi2024,
+  title={Identity Decoupling for Multi-Subject Personalization of Text-to-Image Models},
+  author={Jang, Sangwon and Jo, Jaehyeong and Lee, Kimin and Hwang, Sung Ju},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2024}
+}
+
+@inproceedings{mindiff2025,
+  title={{MINDiff}: Mask-Integrated Negative Attention for Controlling Overfitting in Text-to-Image Personalization},
+  author={Jeong, Seulgi and Kim, Jaeil},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision Workshops (ICCVW)},
+  year={2025}
+}
+
+@inproceedings{sid2024,
+  title={Selectively Informative Description Can Reduce Undesired Embedding Entanglement in Text-to-Image Personalization},
+  author={Kim, Jimyeong and Park, Jungwon and Rhee, Wonjong},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year={2024}
+}
+
+@inproceedings{tokenverse2025,
+  title={{TokenVerse}: Versatile Multi-concept Personalization in Token Modulation Space},
+  author={Garibi, Daniel and Yadin, Shahar and Paiss, Roni and Tov, Omer and Zada, Shiran and Ephrat, Ariel and Michaeli, Tomer and Mosseri, Inbar and Dekel, Tali},
+  booktitle={ACM SIGGRAPH},
+  year={2025}
+}
+
+@inproceedings{dreamblend2025,
+  title={{DreamBlend}: Advancing Personalized Fine-Tuning of Text-to-Image Diffusion Models},
+  author={Ram, Shwetha and Neiman, Tal and Feng, Qianli and Stuart, Andrew and Tran, Son and Chilimbi, Trishul},
+  booktitle={Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  year={2025}
+}
+
+% ====================================================================
+% Contrastive learning
+% ====================================================================
+
+@article{chen2020simclr,
+  title={A Simple Framework for Contrastive Learning of Visual Representations},
+  author={Chen, Ting and Kornblith, Simon and Norouzi, Mohammad and Hinton, Geoffrey},
+  journal={Proceedings of the International Conference on Machine Learning (ICML)},
+  pages={1597--1607},
+  year={2020}
+}
+
+@article{oord2018infonce,
+  title={Representation Learning with Contrastive Predictive Coding},
+  author={van den Oord, Aaron and Li, Yazhe and Vinyals, Oriol},
+  journal={arXiv preprint arXiv:1807.03748},
+  year={2018}
+}
+
+% ====================================================================
+% Training techniques
+% ====================================================================
+
+@article{loshchilov2019adamw,
+  title={Decoupled Weight Decay Regularization},
+  author={Loshchilov, Ilya and Hutter, Frank},
+  journal={International Conference on Learning Representations (ICLR)},
+  year={2019}
+}
