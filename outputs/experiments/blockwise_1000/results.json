@@ -1,0 +1,38 @@
+{
+  "name": "blockwise_1000",
+  "block_config": {
+    "0": "identity",
+    "1": "shared",
+    "2": "context",
+    "3": "context"
+  },
+  "config": {
+    "name": "blockwise_1000",
+    "identity_rank": 16,
+    "context_rank": 4,
+    "shared_rank": 8,
+    "num_steps": 1000,
+    "learning_rate": 0.0005
+  },
+  "training_time_s": 126.76005053520203,
+  "final_loss_total": 0.16844623947143555,
+  "final_loss_diffusion": 0.18844796369175712,
+  "final_loss_ppl": 0.15841534474232533,
+  "final_loss_ccd": 0,
+  "lora_params": 1492480,
+  "lora_param_breakdown": {
+    "identity": 503808,
+    "context": 353792,
+    "shared": 634880
+  },
+  "lora_size_mb": 5.7257843017578125,
+  "lora_b_norm": 0.7868164693936706,
+  "metrics": {
+    "dino_score": 0.4182886481285095,
+    "cae": 0.0009994062905510266,
+    "clip_t_score": 0.25822222232818604,
+    "clip_i_score": 0.7683451175689697,
+    "vqa_alignment": 0.7541666666666668,
+    "lpips_diversity": 0.7732716798782349
+  }
+}

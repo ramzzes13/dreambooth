@@ -1,0 +1,38 @@
+{
+  "name": "uniform_r8_1000",
+  "block_config": {
+    "0": "shared",
+    "1": "shared",
+    "2": "shared",
+    "3": "shared"
+  },
+  "config": {
+    "name": "uniform_r8_1000",
+    "identity_rank": 8,
+    "context_rank": 8,
+    "shared_rank": 8,
+    "num_steps": 1000,
+    "learning_rate": 0.0005
+  },
+  "training_time_s": 124.63349342346191,
+  "final_loss_total": 0.1681126708984375,
+  "final_loss_diffusion": 0.1880721760367205,
+  "final_loss_ppl": 0.15810294910236164,
+  "final_loss_ccd": 0,
+  "lora_params": 1594368,
+  "lora_param_breakdown": {
+    "identity": 0,
+    "context": 0,
+    "shared": 1594368
+  },
+  "lora_size_mb": 6.1143646240234375,
+  "lora_b_norm": 0.8371911915019155,
+  "metrics": {
+    "dino_score": 0.37778136134147644,
+    "cae": 0.001010647586857279,
+    "clip_t_score": 0.26690804958343506,
+    "clip_i_score": 0.7737927436828613,
+    "vqa_alignment": 0.8138888888888888,
+    "lpips_diversity": 0.7820319099859758
+  }
+}

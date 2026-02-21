@@ -1,0 +1,40 @@
+{
+  "name": "ccd_lambda_01",
+  "block_config": {
+    "0": "identity",
+    "1": "shared",
+    "2": "context",
+    "3": "context"
+  },
+  "config": {
+    "name": "ccd_lambda_01",
+    "identity_rank": 16,
+    "context_rank": 4,
+    "shared_rank": 8,
+    "num_steps": 500,
+    "learning_rate": 0.0005,
+    "use_ccd": true,
+    "lambda_ccd": 0.1
+  },
+  "training_time_s": 76.83909225463867,
+  "final_loss_total": 0.17068023504689336,
+  "final_loss_diffusion": 0.19782750478047811,
+  "final_loss_ppl": 0.1570657609819292,
+  "final_loss_ccd": 1.934923593343052e-06,
+  "lora_params": 1492480,
+  "lora_param_breakdown": {
+    "identity": 503808,
+    "context": 353792,
+    "shared": 634880
+  },
+  "lora_size_mb": 5.7257843017578125,
+  "lora_b_norm": 0.5143312184372917,
+  "metrics": {
+    "dino_score": 0.3803325593471527,
+    "cae": 0.001219162018969655,
+    "clip_t_score": 0.26636600494384766,
+    "clip_i_score": 0.7834405899047852,
+    "vqa_alignment": 0.725,
+    "lpips_diversity": 0.7648787236574924
+  }
+}
