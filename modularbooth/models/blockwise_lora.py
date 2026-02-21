@@ -66,13 +66,15 @@ class LoRALinear(nn.Module):
         self.scaling = alpha / rank
 
         d_out, d_in = original_linear.weight.shape
+        device = original_linear.weight.device
+        dtype = original_linear.weight.dtype
 
         # A: (rank, d_in) — Kaiming uniform initialisation
-        self.lora_A = nn.Parameter(torch.empty(rank, d_in))
+        self.lora_A = nn.Parameter(torch.empty(rank, d_in, device=device, dtype=dtype))
         nn.init.kaiming_uniform_(self.lora_A, a=math.sqrt(5))
 
         # B: (d_out, rank) — zero initialisation
-        self.lora_B = nn.Parameter(torch.zeros(d_out, rank))
+        self.lora_B = nn.Parameter(torch.zeros(d_out, rank, device=device, dtype=dtype))
 
         self.lora_dropout = nn.Dropout(p=dropout) if dropout > 0.0 else nn.Identity()
 
@@ -306,6 +308,40 @@ class BlockwiseLoRA:
             n_params = lora_mod.lora_A.numel() + lora_mod.lora_B.numel()
             counts[role] += n_params
         return counts
+
+    def parameters(self):
+        """Yield all trainable LoRA parameters (optimizer-compatible)."""
+        for lora_mod in self._lora_modules.values():
+            yield lora_mod.lora_A
+            yield lora_mod.lora_B
+
+    def train(self, mode: bool = True):
+        """Set LoRA modules to training / eval mode."""
+        for lora_mod in self._lora_modules.values():
+            lora_mod.train(mode)
+        return self
+
+    def eval(self):
+        """Set LoRA modules to eval mode."""
+        return self.train(False)
+
+    def state_dict(self) -> dict[str, torch.Tensor]:
+        """Return a state dict of all LoRA parameters."""
+        state: dict[str, torch.Tensor] = {}
+        for name, lora_mod in self._lora_modules.items():
+            state[f"{name}.lora_A"] = lora_mod.lora_A.data
+            state[f"{name}.lora_B"] = lora_mod.lora_B.data
+        return state
+
+    def load_state_dict(self, state_dict: dict[str, torch.Tensor]) -> None:
+        """Load LoRA parameters from a state dict."""
+        for name, lora_mod in self._lora_modules.items():
+            key_a = f"{name}.lora_A"
+            key_b = f"{name}.lora_B"
+            if key_a in state_dict:
+                lora_mod.lora_A.data.copy_(state_dict[key_a])
+            if key_b in state_dict:
+                lora_mod.lora_B.data.copy_(state_dict[key_b])
 
     def merge_and_unload(self) -> nn.Module:
         """Merge LoRA weights into the base model and remove adapters.

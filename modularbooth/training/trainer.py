@@ -27,7 +27,7 @@ from typing import Any
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.cuda.amp import GradScaler, autocast
+from torch.amp import GradScaler, autocast
 from torch.utils.data import DataLoader, Dataset
 
 from omegaconf import DictConfig
@@ -313,7 +313,7 @@ class ModularBoothTrainer:
         )
         # GradScaler is only needed for fp16; bf16 does not require it.
         self._use_grad_scaler = mp_setting == "fp16"
-        self.scaler = GradScaler(enabled=self._use_grad_scaler)
+        self.scaler = GradScaler("cuda", enabled=self._use_grad_scaler)
 
         # ---- Training hyper-parameters (cached for convenience) ---------------
         self._gradient_accumulation: int = getattr(
