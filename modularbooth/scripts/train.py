@@ -658,10 +658,104 @@ def _training_loop(
             positive_features = None
             negative_features = None
 
-            if cfg.ccd.enabled and "augmented_pixel_values" in batch:
-                # CCD feature extraction would be performed on intermediate
-                # DiT features here via hook-based feature extraction.
-                pass
+            if cfg.ccd.enabled and global_step >= cfg.ccd.warmup_steps and "augmented_pixel_values" in batch:
+                # Hook-based feature extraction from an intermediate DiT layer.
+                hook_features: dict[str, torch.Tensor] = {}
+
+                def _feature_hook(module, inp, output):
+                    if isinstance(output, torch.Tensor):
+                        hook_features["feat"] = output
+                    elif isinstance(output, tuple) and len(output) > 0:
+                        hook_features["feat"] = output[0]
+
+                # Resolve the target layer for feature extraction.
+                feature_layer_spec = cfg.ccd.get("feature_layer", "middle")
+                target_layer = transformer
+                if feature_layer_spec == "middle":
+                    for attr_name in ("transformer_blocks", "joint_transformer_blocks",
+                                      "single_transformer_blocks", "blocks"):
+                        blocks = getattr(transformer, attr_name, None)
+                        if blocks is not None and isinstance(blocks, torch.nn.ModuleList):
+                            target_layer = blocks[len(blocks) // 2]
+                            break
+                else:
+                    for part in feature_layer_spec.split("."):
+                        target_layer = target_layer[int(part)] if part.isdigit() else getattr(target_layer, part)
+
+                # The main forward pass already ran; features from model_pred step
+                # are the "anchor" features. We re-run to capture them via hooks.
+                handle = target_layer.register_forward_hook(_feature_hook)
+                with torch.no_grad():
+                    _ = transformer(noisy_latents[subject_mask], timesteps[subject_mask])
+                handle.remove()
+
+                if "feat" in hook_features:
+                    feats = hook_features["feat"]
+                    if feats.ndim == 4:
+                        subject_features = feats.mean(dim=(2, 3))
+                    elif feats.ndim == 3:
+                        subject_features = feats.mean(dim=1)
+                    else:
+                        subject_features = feats
+
+                    # Positive features: forward pass on augmented subject images.
+                    aug_pv = batch["augmented_pixel_values"]
+                    if isinstance(aug_pv, (list, tuple)):
+                        aug_images = aug_pv[0].to("cuda")
+                    elif isinstance(aug_pv, torch.Tensor):
+                        aug_images = aug_pv[:, 0].to("cuda") if aug_pv.ndim == 5 else aug_pv.to("cuda")
+                    else:
+                        aug_images = None
+
+                    if aug_images is not None:
+                        with torch.no_grad():
+                            if vae is not None:
+                                aug_latents = vae.encode(aug_images).latent_dist.sample()
+                                aug_latents = aug_latents * vae.config.scaling_factor
+                            else:
+                                aug_latents = aug_images
+                            aug_noise = torch.randn_like(aug_latents)
+                            sub_timesteps = timesteps[subject_mask][:aug_latents.shape[0]]
+                            if scheduler_train is not None:
+                                aug_noisy = scheduler_train.add_noise(aug_latents, aug_noise, sub_timesteps)
+                            else:
+                                aug_noisy = aug_latents + aug_noise
+
+                        hook_features.clear()
+                        handle = target_layer.register_forward_hook(_feature_hook)
+                        with torch.no_grad():
+                            _ = transformer(aug_noisy, sub_timesteps)
+                        handle.remove()
+
+                        if "feat" in hook_features:
+                            pos_feats = hook_features["feat"]
+                            if pos_feats.ndim == 4:
+                                positive_features = pos_feats.mean(dim=(2, 3))
+                            elif pos_feats.ndim == 3:
+                                positive_features = pos_feats.mean(dim=1)
+                            else:
+                                positive_features = pos_feats
+
+                    # Negative features: use class sample features.
+                    if class_mask.any():
+                        hook_features.clear()
+                        handle = target_layer.register_forward_hook(_feature_hook)
+                        with torch.no_grad():
+                            _ = transformer(noisy_latents[class_mask], timesteps[class_mask])
+                        handle.remove()
+
+                        if "feat" in hook_features:
+                            neg_feats = hook_features["feat"]
+                            if neg_feats.ndim == 4:
+                                neg_pooled = neg_feats.mean(dim=(2, 3))
+                            elif neg_feats.ndim == 3:
+                                neg_pooled = neg_feats.mean(dim=1)
+                            else:
+                                neg_pooled = neg_feats
+                            n_sub = subject_features.shape[0]
+                            negative_features = neg_pooled.unsqueeze(0).expand(
+                                n_sub, -1, -1
+                            ).contiguous()
 
             # Compute combined loss.
             loss_dict = loss_fn(

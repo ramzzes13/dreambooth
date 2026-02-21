@@ -1,12 +1,13 @@
 """VQA-based prompt alignment metric.
 
 Evaluates how well a generated image matches its text prompt by decomposing the
-prompt into a set of binary yes/no questions and (eventually) using a
-Vision-Language Model (VLM) to answer them.
+prompt into a set of binary yes/no questions and using CLIP text-image similarity
+as a proxy for VQA answering.  Each question is converted to a CLIP text query
+and matched against the image; the alignment score is the fraction of questions
+whose CLIP similarity exceeds a threshold.
 
-Currently the VLM integration is a placeholder -- :meth:`compute_alignment`
-always returns ``0.0``.  The question-generation logic is fully functional
-and can be used to prepare inputs for an external VLM evaluation pipeline.
+The question-generation logic decomposes prompts into element-level questions
+that can also be fed to an external VLM evaluation pipeline.
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ import logging
 import re
 from typing import Union
 
+import torch
 from PIL import Image
 
 logger = logging.getLogger(__name__)
@@ -58,19 +60,48 @@ _STYLE_KEYWORDS: set[str] = {
 class VQAAlignment:
     """VQA-based prompt alignment scorer.
 
-    Decomposes a text prompt into binary yes/no questions and (in the future)
-    queries a VLM to verify whether each element is present in the generated
-    image.
+    Decomposes a text prompt into binary yes/no questions and uses CLIP
+    text-image similarity as a proxy to verify whether each element is
+    present in the generated image.  The alignment score is the fraction
+    of questions whose CLIP similarity exceeds a configurable threshold.
 
-    .. note::
-
-        The VLM inference step is currently a **placeholder**.  Call
-        :meth:`generate_questions` to obtain the question list and feed it to
-        your own VQA pipeline externally.
+    Args:
+        clip_model: OpenCLIP model name (default: ``"ViT-B-32"``).
+        pretrained: OpenCLIP pretrained weights (default: ``"laion2b_s34b_b79k"``).
+        device: Torch device string.
+        threshold: CLIP cosine similarity threshold above which a question
+            is considered "answered yes".
     """
 
-    def __init__(self) -> None:
-        pass
+    def __init__(
+        self,
+        clip_model: str = "ViT-B-32",
+        pretrained: str = "laion2b_s34b_b79k",
+        device: str = "cpu",
+        threshold: float = 0.22,
+    ) -> None:
+        self._clip_model_name = clip_model
+        self._pretrained = pretrained
+        self.device = device
+        self.threshold = threshold
+        self._model = None
+        self._preprocess = None
+        self._tokenizer = None
+
+    def _ensure_model(self) -> None:
+        """Lazily load the CLIP model on first use."""
+        if self._model is not None:
+            return
+
+        import open_clip
+
+        logger.info("Loading OpenCLIP model %s (%s)", self._clip_model_name, self._pretrained)
+        model, _, preprocess = open_clip.create_model_and_transforms(
+            self._clip_model_name, pretrained=self._pretrained
+        )
+        self._model = model.eval().to(self.device)
+        self._preprocess = preprocess
+        self._tokenizer = open_clip.get_tokenizer(self._clip_model_name)
 
     # ------------------------------------------------------------------
     # Question generation
@@ -213,55 +244,97 @@ class VQAAlignment:
         return questions
 
     # ------------------------------------------------------------------
-    # Alignment scoring (placeholder)
+    # Alignment scoring
     # ------------------------------------------------------------------
 
+    @torch.no_grad()
     def compute_alignment(self, image: ImageInput, prompt: str) -> float:
         """Compute VQA-based alignment between an image and a prompt.
 
-        .. warning::
-
-            This method is a **placeholder**.  It generates the binary
-            questions but does not yet run a VLM to answer them.  VLM
-            integration is planned for a future release.  The method
-            always returns ``0.0``.
-
-        To use this metric today, call :meth:`generate_questions` and feed
-        the resulting question list to your own VLM pipeline, then compute the
-        fraction of "yes" answers.
+        Decomposes the prompt into binary questions, then uses CLIP text-image
+        similarity as a proxy for VQA.  Each question is converted to a
+        statement (e.g. "Is there a dog?" -> "a photo of a dog") and compared
+        against the image.  The score is the fraction of questions whose
+        similarity exceeds ``self.threshold``.
 
         Args:
-            image: The generated image (currently unused).
+            image: The generated image.
             prompt: The text prompt used to generate the image.
 
         Returns:
-            Alignment score in ``[0, 1]`` -- currently always ``0.0``.
+            Alignment score in ``[0, 1]``.
         """
+        self._ensure_model()
+
         questions = self.generate_questions(prompt)
-        logger.warning(
-            "VQAAlignment.compute_alignment is a placeholder and always returns 0.0. "
-            "Generated %d questions for prompt: '%s'. "
-            "Integrate a VLM (e.g. LLaVA, InstructBLIP) to answer these questions.",
-            len(questions),
-            prompt[:80],
+        if not questions:
+            return 0.0
+
+        # Convert questions to CLIP-friendly statements.
+        statements = [self._question_to_statement(q) for q in questions]
+
+        # Encode image.
+        img_tensor = self._preprocess(image).unsqueeze(0).to(self.device)
+        image_features = self._model.encode_image(img_tensor)
+        image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+
+        # Encode text statements.
+        tokens = self._tokenizer(statements).to(self.device)
+        text_features = self._model.encode_text(tokens)
+        text_features = text_features / text_features.norm(dim=-1, keepdim=True)
+
+        # Compute cosine similarities.
+        similarities = (image_features @ text_features.T).squeeze(0)
+
+        # Score = fraction of questions above threshold.
+        num_yes = (similarities >= self.threshold).sum().item()
+        score = num_yes / len(questions)
+
+        logger.debug(
+            "VQA alignment for '%s': %.3f (%d/%d questions above threshold %.2f)",
+            prompt[:60], score, int(num_yes), len(questions), self.threshold,
         )
-        # TODO: Integrate a VLM to answer the generated questions and compute
-        # the fraction of affirmative responses.
-        return 0.0
+        return score
+
+    @staticmethod
+    def _question_to_statement(question: str) -> str:
+        """Convert a yes/no question to a CLIP-friendly statement.
+
+        Examples:
+            "Is there a dog?" -> "a photo with a dog"
+            "Is the hat red?" -> "a photo where the hat is red"
+            "Does the image show a beach scene?" -> "a photo of a beach scene"
+        """
+        q = question.rstrip("?").strip()
+
+        if q.lower().startswith("is there "):
+            return "a photo with " + q[9:]
+        if q.lower().startswith("does the image show "):
+            return "a photo of " + q[20:]
+        if q.lower().startswith("is the image in "):
+            return "a photo in " + q[16:]
+        if q.lower().startswith("is the "):
+            return "a photo where the " + q[7:]
+        if q.lower().startswith("is "):
+            return "a photo where " + q[3:]
+        if q.lower().startswith("does "):
+            return "a photo where " + q[5:]
+
+        return "a photo of " + q
 
     def compute_batch_alignment(
         self,
         images: list[ImageInput],
         prompts: list[str],
     ) -> float:
-        """Compute mean VQA alignment across a batch (placeholder).
+        """Compute mean VQA alignment across a batch.
 
         Args:
             images: List of generated images.
             prompts: Corresponding text prompts (same length as ``images``).
 
         Returns:
-            Mean alignment score -- currently always ``0.0``.
+            Mean alignment score in ``[0, 1]``.
 
         Raises:
             ValueError: If the number of images and prompts do not match.
