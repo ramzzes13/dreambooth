@@ -1,0 +1,18 @@
+{
+  "model": "CompVis/stable-diffusion-v1-4",
+  "total_time_s": 178.72386527061462,
+  "training_time_s": 11.764379739761353,
+  "training_steps": 100,
+  "final_loss_total": 0.16058656692504883,
+  "final_loss_diffusion": 0.23206051913174716,
+  "final_loss_ppl": 0.12538297852473473,
+  "lora_params": 1594368,
+  "lora_size_mb": 3.0732803344726562,
+  "metrics": {
+    "dino_score": 0.30965888500213623,
+    "clip_t_score": 0.23815155029296875,
+    "clip_i_score": 0.7849603295326233,
+    "vqa_alignment": 0.9166666666666666,
+    "lpips_diversity": 0.7572263777256012
+  }
+}
