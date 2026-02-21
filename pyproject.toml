@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "modularbooth"
+version = "0.1.0"
+description = "Modular Multi-Subject Personalization for Diffusion Transformers with Disentangled Context-Appearance Learning"
+readme = "dreambooth_research_plan.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "ModularBooth Authors"},
+]
+
+dependencies = [
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "diffusers>=0.30.0",
+    "transformers>=4.40.0",
+    "peft>=0.12.0",
+    "accelerate>=0.30.0",
+    "safetensors>=0.4.0",
+    "open-clip-torch>=2.24.0",
+    "lpips>=0.1.4",
+    "Pillow>=10.0.0",
+    "albumentations>=1.3.0",
+    "omegaconf>=2.3.0",
+    "wandb>=0.16.0",
+    "tqdm>=4.66.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
+sam = [
+    "segment-anything-2",
+]
+
+[project.scripts]
+modularbooth-train = "modularbooth.scripts.train:main"
+modularbooth-evaluate = "modularbooth.scripts.evaluate:main"
+modularbooth-generate = "modularbooth.scripts.generate:main"
+modularbooth-probe = "modularbooth.scripts.probe_blocks:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["modularbooth*"]
+
+[tool.pytest.ini_options]
+testpaths = ["modularbooth/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"

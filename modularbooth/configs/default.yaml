@@ -1,0 +1,83 @@
+model:
+  backbone: "black-forest-labs/FLUX.1-dev"
+  dtype: "bfloat16"
+  revision: null
+
+subject:
+  token: "[V]"
+  class_noun: "object"
+  num_images: 4
+
+lora:
+  # Ranks assigned per block type (from knowledge probing)
+  identity_rank: 16
+  context_rank: 4
+  shared_rank: 8
+  alpha_ratio: 1.0  # alpha = rank * alpha_ratio
+  dropout: 0.05
+  target_modules:
+    - "to_q"
+    - "to_k"
+    - "to_v"
+    - "to_out.0"
+  # Block classification (populated by probing script)
+  block_config: null  # Will be a dict mapping block_idx -> "identity"|"context"|"shared"
+
+training:
+  num_steps: 800
+  batch_size: 1
+  gradient_accumulation: 4
+  learning_rate: 1.0e-4
+  optimizer: "adamw"
+  weight_decay: 0.01
+  warmup_steps: 50
+  max_grad_norm: 1.0
+  mixed_precision: "bf16"
+  seed: 42
+  log_every: 10
+  save_every: 200
+  validate_every: 100
+
+prior_preservation:
+  enabled: true
+  num_class_images: 200
+  lambda_ppl: 1.0
+
+ccd:
+  enabled: true
+  lambda_ccd: 0.3
+  temperature: 0.07
+  num_augmentations: 5
+  warmup_steps: 100  # Enable CCD loss after this many steps
+  feature_layer: "middle"  # Which DiT layer to extract features from
+
+segmentation:
+  model: "facebook/sam2-hiera-large"
+  confidence_threshold: 0.8
+
+captioning:
+  enabled: true
+  model: "llava"
+  template: "Describe this image in detail, focusing on the main subject. The subject is referred to as {token} {class_noun}."
+
+inference:
+  num_steps: 30
+  guidance_scale: 7.5
+  negative_attention_strength: 3.0
+  mask_leakage_alpha: 0.05
+  resolution: 1024
+  num_images_per_prompt: 4
+  seed: null
+
+evaluation:
+  dino_model: "facebook/dino-vits16"
+  dinov2_model: "facebook/dinov2-vitb14"
+  clip_model: "openai/clip-vit-large-patch14"
+  num_images_per_prompt: 4
+  num_contexts_for_cae: 10
+
+output:
+  dir: "./outputs"
+  checkpoints_dir: "./outputs/checkpoints"
+  images_dir: "./outputs/images"
+  metrics_dir: "./outputs/metrics"

@@ -1,0 +1,42 @@
+# FLUX.1-dev specific configuration overrides
+model:
+  backbone: "black-forest-labs/FLUX.1-dev"
+  dtype: "bfloat16"
+  # FLUX uses MM-DiT with dual-stream and single-stream blocks
+  num_double_blocks: 19  # Double-stream transformer blocks
+  num_single_blocks: 38  # Single-stream transformer blocks
+  hidden_size: 3072
+  num_attention_heads: 24
+
+lora:
+  identity_rank: 16
+  context_rank: 4
+  shared_rank: 8
+  target_modules:
+    - "to_q"
+    - "to_k"
+    - "to_v"
+    - "to_out.0"
+    - "proj_mlp"
+  # Default block config for FLUX (can be overridden by probing)
+  # Double blocks 0-7: context, 8-14: shared, 15-18: identity
+  # Single blocks 0-15: context, 16-30: shared, 31-37: identity
+  block_config:
+    double_blocks:
+      context: [0, 1, 2, 3, 4, 5, 6, 7]
+      shared: [8, 9, 10, 11, 12, 13, 14]
+      identity: [15, 16, 17, 18]
+    single_blocks:
+      context: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      shared: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+      identity: [31, 32, 33, 34, 35, 36, 37]
+
+training:
+  num_steps: 800
+  learning_rate: 1.0e-4
+  mixed_precision: "bf16"
+
+inference:
+  num_steps: 30
+  guidance_scale: 7.5
+  resolution: 1024

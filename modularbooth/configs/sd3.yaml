@@ -1,0 +1,32 @@
+# Stable Diffusion 3 Medium specific configuration overrides
+model:
+  backbone: "stabilityai/stable-diffusion-3-medium-diffusers"
+  dtype: "float16"
+  num_blocks: 24  # MM-DiT blocks in SD3
+  hidden_size: 1536
+  num_attention_heads: 24
+
+lora:
+  identity_rank: 16
+  context_rank: 4
+  shared_rank: 8
+  target_modules:
+    - "to_q"
+    - "to_k"
+    - "to_v"
+    - "to_out.0"
+  block_config:
+    blocks:
+      context: [0, 1, 2, 3, 4, 5, 6, 7]
+      shared: [8, 9, 10, 11, 12, 13, 14, 15]
+      identity: [16, 17, 18, 19, 20, 21, 22, 23]
+
+training:
+  num_steps: 1000
+  learning_rate: 1.0e-4
+  mixed_precision: "fp16"
+
+inference:
+  num_steps: 28
+  guidance_scale: 7.0
+  resolution: 1024
