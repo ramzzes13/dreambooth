@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2025.12.17)  21 FEB 2026 23:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2025.12.17)  21 FEB 2026 23:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -603,6 +603,9 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
+
+Underfull \vbox (badness 1902) has occurred while \output is active []
+
  [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 
@@ -636,13 +639,13 @@ Underfull \hbox (badness 2096) in paragraph at lines 196--197
 x[]; [] ; x[]\OMS/cmsy/m/n/10 g$\OT1/ptm/m/n/10 (+20) , class im-ages
  []
 
-[3]
+[3] [4]
 Underfull \hbox (badness 1838) in paragraph at lines 277--278
 []\OT1/ptm/b/n/10 (+20) LPIPS di-ver-sity\OT1/ptm/m/n/10 (+20) : Av-er-age pair
 -wise LPIPS dis-
  []
 
-[4]
+
 Overfull \hbox (43.05447pt too wide) in paragraph at lines 304--316
  [] 
  []
@@ -671,7 +674,7 @@ n/10 (+20) while hold-ing $\OML/cmm/m/it/10 r[][]\OT1/cmr/m/n/10 4$ \OT1/ptm/m/
 n/10 (+20) and
  []
 
-<figures/rank_sensitivity.pdf, id=170, 239.62022pt x 168.4192pt>
+<figures/rank_sensitivity.pdf, id=169, 239.62022pt x 168.4192pt>
 File: figures/rank_sensitivity.pdf Graphic file (type pdf)
 <use figures/rank_sensitivity.pdf>
 Package pdftex.def Info: figures/rank_sensitivity.pdf  used on input line 366.
@@ -686,28 +689,22 @@ pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.402 T
-       he relationship between $\lambda_2$ and DINO is non-monotonic: $\lamb...
-
+l.406 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.402 T
-       he relationship between $\lambda_2$ and DINO is non-monotonic: $\lamb...
-
-pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has
- been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.402 T
-       he relationship between $\lambda_2$ and DINO is non-monotonic: $\lamb...
-]
+l.406 
+      ]
 Overfull \hbox (31.73547pt too wide) in paragraph at lines 414--426
  [] 
  []
 
-<figures/training_duration.pdf, id=192, 492.40613pt x 168.34518pt>
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+<figures/training_duration.pdf, id=193, 492.40613pt x 168.34518pt>
 File: figures/training_duration.pdf Graphic file (type pdf)
 <use figures/training_duration.pdf>
 Package pdftex.def Info: figures/training_duration.pdf  used on input line 449.
@@ -718,99 +715,101 @@ Overfull \hbox (50.69pt too wide) in paragraph at lines 464--479
  [] 
  []
 
+
+Overfull \hbox (1.97958pt too wide) in paragraph at lines 498--510
+ [] 
+ []
+
 [6
 pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.490 
-      
+l.512 \end{table}
+                 
+pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.512 \end{table}
+                 
 pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.490 
-      
+l.512 \end{table}
+                 
 pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.490 
-      
-pdfTeX warning (ext4): destination with the same identifier (name{table.5}) has
- been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.490 
-       <./figures/rank_sensitivity.pdf> <./figures/training_duration.pdf>]
-Overfull \hbox (1.97958pt too wide) in paragraph at lines 498--510
- [] 
- []
-
-<figures/metrics_comparison.pdf, id=311, 498.66489pt x 132.36137pt>
+l.512 \end{table}
+                  <./figures/rank_sensitivity.pdf> <./figures/training_duration
+.pdf>]
+<figures/metrics_comparison.pdf, id=310, 498.66489pt x 132.36137pt>
 File: figures/metrics_comparison.pdf Graphic file (type pdf)
 <use figures/metrics_comparison.pdf>
 Package pdftex.def Info: figures/metrics_comparison.pdf  used on input line 521
 .
 (pdftex.def)             Requested size: 234.8775pt x 62.34314pt.
-<figures/param_efficiency.pdf, id=312, 242.31148pt x 190.161pt>
+<figures/param_efficiency.pdf, id=311, 242.31148pt x 190.161pt>
 File: figures/param_efficiency.pdf Graphic file (type pdf)
 <use figures/param_efficiency.pdf>
 Package pdftex.def Info: figures/param_efficiency.pdf  used on input line 529.
 (pdftex.def)             Requested size: 199.64731pt x 156.68744pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
  [7
+pdfTeX warning (ext4): destination with the same identifier (name{table.5}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.583 C
+       CD provides an orthogonal benefit: on masked inference, CCD improves ...
+
 pdfTeX warning (ext4): destination with the same identifier (name{table.6}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.585 
-      
+l.583 C
+       CD provides an orthogonal benefit: on masked inference, CCD improves ...
+
 pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.585 
-      
+l.583 C
+       CD provides an orthogonal benefit: on masked inference, CCD improves ...
+
 pdfTeX warning (ext4): destination with the same identifier (name{figure.4}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.585 
-       <./figures/metrics_comparison.pdf> <./figures/param_efficiency.pdf>]
-Overfull \hbox (25.05302pt too wide) in paragraph at lines 593--602
- [] 
- []
-
-<figures/multi_subject_comparison.pdf, id=421, 860.69118pt x 208.61188pt>
+l.583 C
+       CD provides an orthogonal benefit: on masked inference, CCD improves ...
+ <./figures/metrics_comparison.pdf> <./figures/param_efficiency.pdf>]
+<figures/multi_subject_comparison.pdf, id=420, 1003.06305pt x 222.74768pt>
 File: figures/multi_subject_comparison.pdf Graphic file (type pdf)
 <use figures/multi_subject_comparison.pdf>
 Package pdftex.def Info: figures/multi_subject_comparison.pdf  used on input li
-ne 608.
-(pdftex.def)             Requested size: 234.8775pt x 56.92757pt.
-
-Underfull \vbox (badness 5924) has occurred while \output is active []
-
+ne 611.
+(pdftex.def)             Requested size: 234.8775pt x 52.15877pt.
  [8
 pdfTeX warning (ext4): destination with the same identifier (name{table.7}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.648 
+l.644 
       
 pdfTeX warning (ext4): destination with the same identifier (name{table.8}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.648 
+l.644 
       
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.648 
+l.644 
        <./figures/multi_subject_comparison.pdf>] (./modularbooth.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 9--12
 []\OT1/ptm/m/n/10 (+20) Black For-est Labs.  FLUX.1, 2024.  URL
@@ -821,32 +820,36 @@ Underfull \hbox (badness 10000) in paragraph at lines 9--12
 [][]$\OT1/pcr/m/n/10 https : / / blackforestlabs . ai /
  []
 
-[9] [10])
+
+Underfull \vbox (badness 1478) has occurred while \output is active []
+
+ [9]
+[10])
 LaTeX Font Info:    Trying to load font information for OMS+pcr on input line 6
-89.
+92.
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omspcr.fd
 File: omspcr.fd 
 )
 LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 689.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 692.
 
-Underfull \hbox (badness 3525) in paragraph at lines 687--691
+Underfull \hbox (badness 3525) in paragraph at lines 690--694
  \OT1/ptm/b/n/10 (+20) Soft-ware and hard-ware. \OT1/ptm/m/n/10 (+20) All ex-pe
 r-i-ments are im-
  []
 
 
-Underfull \hbox (badness 4913) in paragraph at lines 687--691
+Underfull \hbox (badness 4913) in paragraph at lines 690--694
 \OT1/ptm/m/n/10 (+20) ple-mented in Py-Torch 2.x us-ing the Hug-ging-Face
  []
 
 
-Underfull \hbox (badness 1708) in paragraph at lines 687--691
+Underfull \hbox (badness 1708) in paragraph at lines 690--694
 \OT1/ptm/m/n/10 (+20) mod-ules wrap each tar-geted lin-ear layer, com-put-ing
  []
 
 
-Underfull \hbox (badness 1571) in paragraph at lines 687--691
+Underfull \hbox (badness 1571) in paragraph at lines 690--694
 \OT1/cmr/m/n/10 ^^A\OT1/cmr/bx/n/10 W\OML/cmm/m/it/10 x \OT1/cmr/m/n/10 = (\OML
 /cmm/m/it/10 =r\OT1/cmr/m/n/10 )\OT1/cmr/bx/n/10 B\OT1/cmr/m/n/10 (\OT1/cmr/bx
 /n/10 A\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 )$ \OT1/ptm/m/n/10 (+20) in the for-wa
@@ -860,13 +863,13 @@ Package rerunfilecheck Info: File `modularbooth.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 14740 strings out of 478051
- 230650 string characters out of 5840942
- 1883330 words of memory out of 5000000
+ 14733 strings out of 478051
+ 230589 string characters out of 5840942
+ 1884330 words of memory out of 5000000
  34181 multiletter control sequences out of 15000+600000
- 556146 words of font info for 315 fonts, out of 8000000 for 9000
+ 555873 words of font info for 310 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,13n,76p,1009b,634s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,15n,76p,1009b,634s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist
 , replaced by a fixed one
@@ -885,15 +888,16 @@ are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texl
 ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts
-/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/tim
-es/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on modularbooth.pdf (12 pages, 366641 bytes).
+/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/time
+s/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on modularbooth.pdf (12 pages, 378194 bytes).
 PDF statistics:
- 633 PDF objects out of 1000 (max. 8388607)
- 343 compressed objects within 4 object streams
+ 643 PDF objects out of 1000 (max. 8388607)
+ 345 compressed objects within 4 object streams
  85 named destinations out of 1000 (max. 500000)
  57370 words of extra memory for PDF output out of 61914 (max. 10000000)
 

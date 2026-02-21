@@ -53,30 +53,30 @@
 \citation{loshchilov2019adamw}
 \citation{caron2021dino}
 \citation{radford2021clip}
-\citation{zhang2018lpips}
 \newlabel{alg:training}{{1}{4}{}{algorithm.1}{}}
 \newlabel{sec:experiments}{{4}{4}{}{section.4}{}}
+\citation{zhang2018lpips}
 \citation{ho2020denoising}
 \citation{kirillov2023segment}
 \citation{sid2024}
 \newlabel{tab:blockwise}{{1}{5}{Blockwise vs.\ uniform LoRA rank configurations on SD~1.4. Blockwise achieves competitive fidelity (DINO) with the best prompt adherence (CLIP-T) at 53\% fewer parameters than uniform $r{=}16$}{table.1}{}}
 \newlabel{sec:ablation_blockwise}{{4.2}{5}{}{subsection.4.2}{}}
-\newlabel{sec:ablation_ccd}{{4.3}{5}{}{subsection.4.3}{}}
 \newlabel{tab:ccd}{{2}{5}{Effect of CCD loss on blockwise LoRA. CCD improves subject fidelity (DINO, CLIP-I) and prompt alignment (VQA) with zero parameter overhead}{table.2}{}}
-\newlabel{tab:rank_sensitivity}{{3}{5}{Identity-block rank sensitivity. Varying $r_{\text {id}}$ while fixing $r_{\text {ctx}}{=}4$, $r_{\text {sh}}{=}8$. Rank~16 provides the best efficiency--fidelity trade-off}{table.3}{}}
+\newlabel{sec:ablation_ccd}{{4.3}{5}{}{subsection.4.3}{}}
 \newlabel{sec:rank_sensitivity}{{4.4}{5}{}{subsection.4.4}{}}
+\newlabel{sec:ccd_weight}{{4.5}{5}{}{subsection.4.5}{}}
 \newlabel{fig:rank_sensitivity}{{1}{6}{Identity-block rank vs.\ DINO and CLIP-T scores. DINO peaks at rank~16 and plateaus; CLIP-T is relatively stable, confirming that identity-block capacity does not harm prompt fidelity}{figure.1}{}}
-\newlabel{tab:ccd_lambda}{{4}{6}{CCD loss weight sensitivity on blockwise LoRA ($r_{\text {id}}{=}16$, $r_{\text {ctx}}{=}4$, $r_{\text {sh}}{=}8$). $\lambda _2{=}0.3$ achieves the best balance between subject fidelity and prompt alignment}{table.4}{}}
-\newlabel{sec:ccd_weight}{{4.5}{6}{}{subsection.4.5}{}}
+\newlabel{tab:rank_sensitivity}{{3}{6}{Identity-block rank sensitivity. Varying $r_{\text {id}}$ while fixing $r_{\text {ctx}}{=}4$, $r_{\text {sh}}{=}8$. Rank~16 provides the best efficiency--fidelity trade-off}{table.3}{}}
 \newlabel{sec:training_duration}{{4.6}{6}{}{subsection.4.6}{}}
+\newlabel{tab:ccd_lambda}{{4}{6}{CCD loss weight sensitivity on blockwise LoRA ($r_{\text {id}}{=}16$, $r_{\text {ctx}}{=}4$, $r_{\text {sh}}{=}8$). $\lambda _2{=}0.3$ achieves the best balance between subject fidelity and prompt alignment}{table.4}{}}
 \newlabel{fig:training_duration}{{2}{6}{Effect of training duration (500 vs.\ 1000 steps). Without CCD, longer training degrades VQA (blockwise: $-10.9\%$). With CCD, VQA is preserved (0.863) while DINO improves (+6.0\%)}{figure.2}{}}
-\newlabel{tab:training_steps}{{5}{6}{Effect of training duration (500 vs.\ 1000 steps). CCD prevents prompt-alignment degradation at longer training while enabling significant DINO improvement. $\Delta $VQA shows change from 500 to 1000 steps}{table.5}{}}
+\newlabel{tab:training_steps}{{5}{7}{Effect of training duration (500 vs.\ 1000 steps). CCD prevents prompt-alignment degradation at longer training while enabling significant DINO improvement. $\Delta $VQA shows change from 500 to 1000 steps}{table.5}{}}
 \newlabel{tab:efficiency}{{6}{7}{Parameter efficiency comparison. Blockwise LoRA achieves 53\% storage reduction versus uniform $r{=}16$ with comparable generation quality}{table.6}{}}
-\newlabel{fig:metrics}{{3}{7}{Per-metric comparison of all five LoRA configurations. Blockwise+CCD matches or exceeds uniform baselines on identity metrics (DINO, CLIP-I) while using 53\% fewer parameters than uniform $r{=}16$}{figure.3}{}}
 \newlabel{sec:multi_subject}{{4.9}{7}{}{subsection.4.9}{}}
+\newlabel{fig:metrics}{{3}{7}{Per-metric comparison of all five LoRA configurations. Blockwise+CCD matches or exceeds uniform baselines on identity metrics (DINO, CLIP-I) while using 53\% fewer parameters than uniform $r{=}16$}{figure.3}{}}
 \newlabel{fig:pareto}{{4}{7}{Parameter count vs.\ DINO score. Blockwise configurations (red, purple) sit favorably on the parameter--fidelity Pareto frontier, achieving comparable DINO to uniform $r{=}8$ at fewer parameters and surpassing uniform $r{=}16$ despite $2\times $ fewer parameters}{figure.4}{}}
 \newlabel{tab:full}{{7}{8}{Complete evaluation results across all six metrics. Best results per column in \textbf {bold}. Blockwise+CCD achieves the strongest combined profile: near-best DINO (0.397), best CLIP-I (0.780) and VQA (0.863) among blockwise configs, at 53\% fewer parameters than uniform $r{=}16$}{table.7}{}}
-\newlabel{tab:multi_subject}{{8}{8}{Multi-subject composition: masked inference vs.\ na\"ive LoRA addition. Masked composition achieves $2.76\times $ higher identity isolation (IIS) and reduced cross-subject contamination}{table.8}{}}
+\newlabel{tab:multi_subject}{{8}{8}{Multi-subject composition: $2 \times 2$ factorial over inference strategy (masked vs.\ na\"ive) and training loss (with vs.\ without CCD). The full method (masked + CCD) achieves $8.0\times $ higher identity isolation than the na\"ive no-CCD baseline}{table.8}{}}
 \newlabel{fig:multi_subject}{{5}{8}{Multi-subject composition metrics. Masked inference achieves higher identity isolation (IIS), better prompt fidelity (CLIP-T), and greater spatial differentiation (Comp.\ Diversity) compared to na\"ive LoRA addition, while reducing cross-subject contamination}{figure.5}{}}
 \newlabel{sec:discussion}{{5}{8}{}{section.5}{}}
 \citation{kirillov2023segment}
@@ -85,9 +85,9 @@
 \bibcite{blackforestlabs2024flux}{{1}{2024}{{Black Forest Labs}}{{}}}
 \bibcite{caron2021dino}{{2}{2021}{{Caron et~al.}}{{Caron, Touvron, Misra, J{\'e}gou, Mairal, Bojanowski, and Joulin}}}
 \bibcite{chen2020simclr}{{3}{2020}{{Chen et~al.}}{{Chen, Kornblith, Norouzi, and Hinton}}}
+\newlabel{sec:conclusion}{{6}{9}{}{section.6}{}}
 \bibcite{esser2024scaling}{{4}{2024}{{Esser et~al.}}{{Esser, Kulal, Blattmann, Entezari, M{\"u}ller, Saini, Levi, Lorenz, Sauer, Boesel, Podell, Dockhorn, English, Lacey, Goodwin, Marek, and Rombach}}}
 \bibcite{gal2022textual}{{5}{2023}{{Gal et~al.}}{{Gal, Alaluf, Atzmon, Patashnik, Bermano, Chechik, and Cohen-Or}}}
-\newlabel{sec:conclusion}{{6}{9}{}{section.6}{}}
 \bibcite{tokenverse2025}{{6}{2025}{{Garibi et~al.}}{{Garibi, Yadin, Paiss, Tov, Zada, Ephrat, Michaeli, Mosseri, and Dekel}}}
 \bibcite{ho2020denoising}{{7}{2020}{{Ho et~al.}}{{Ho, Jain, and Abbeel}}}
 \bibcite{hu2022lora}{{8}{2022}{{Hu et~al.}}{{Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and Chen}}}
