@@ -73,18 +73,21 @@
 \newlabel{tab:training_steps}{{5}{6}{Effect of training duration (500 vs.\ 1000 steps). CCD prevents prompt-alignment degradation at longer training while enabling significant DINO improvement. $\Delta $VQA shows change from 500 to 1000 steps}{table.5}{}}
 \newlabel{tab:efficiency}{{6}{7}{Parameter efficiency comparison. Blockwise LoRA achieves 53\% storage reduction versus uniform $r{=}16$ with comparable generation quality}{table.6}{}}
 \newlabel{fig:metrics}{{3}{7}{Per-metric comparison of all five LoRA configurations. Blockwise+CCD matches or exceeds uniform baselines on identity metrics (DINO, CLIP-I) while using 53\% fewer parameters than uniform $r{=}16$}{figure.3}{}}
-\newlabel{sec:discussion}{{5}{7}{}{section.5}{}}
+\newlabel{sec:multi_subject}{{4.9}{7}{}{subsection.4.9}{}}
 \newlabel{fig:pareto}{{4}{7}{Parameter count vs.\ DINO score. Blockwise configurations (red, purple) sit favorably on the parameter--fidelity Pareto frontier, achieving comparable DINO to uniform $r{=}8$ at fewer parameters and surpassing uniform $r{=}16$ despite $2\times $ fewer parameters}{figure.4}{}}
+\newlabel{tab:full}{{7}{8}{Complete evaluation results across all six metrics. Best results per column in \textbf {bold}. Blockwise+CCD achieves the strongest combined profile: near-best DINO (0.397), best CLIP-I (0.780) and VQA (0.863) among blockwise configs, at 53\% fewer parameters than uniform $r{=}16$}{table.7}{}}
+\newlabel{tab:multi_subject}{{8}{8}{Multi-subject composition: masked inference vs.\ na\"ive LoRA addition. Masked composition achieves $2.76\times $ higher identity isolation (IIS) and reduced cross-subject contamination}{table.8}{}}
+\newlabel{fig:multi_subject}{{5}{8}{Multi-subject composition metrics. Masked inference achieves higher identity isolation (IIS), better prompt fidelity (CLIP-T), and greater spatial differentiation (Comp.\ Diversity) compared to na\"ive LoRA addition, while reducing cross-subject contamination}{figure.5}{}}
+\newlabel{sec:discussion}{{5}{8}{}{section.5}{}}
 \citation{kirillov2023segment}
 \citation{ye2023ipadapter}
 \bibdata{references}
 \bibcite{blackforestlabs2024flux}{{1}{2024}{{Black Forest Labs}}{{}}}
 \bibcite{caron2021dino}{{2}{2021}{{Caron et~al.}}{{Caron, Touvron, Misra, J{\'e}gou, Mairal, Bojanowski, and Joulin}}}
 \bibcite{chen2020simclr}{{3}{2020}{{Chen et~al.}}{{Chen, Kornblith, Norouzi, and Hinton}}}
-\newlabel{tab:full}{{7}{8}{Complete evaluation results across all six metrics. Best results per column in \textbf {bold}. Blockwise+CCD achieves the strongest combined profile: near-best DINO (0.397), best CLIP-I (0.780) and VQA (0.863) among blockwise configs, at 53\% fewer parameters than uniform $r{=}16$}{table.7}{}}
-\newlabel{sec:conclusion}{{6}{8}{}{section.6}{}}
 \bibcite{esser2024scaling}{{4}{2024}{{Esser et~al.}}{{Esser, Kulal, Blattmann, Entezari, M{\"u}ller, Saini, Levi, Lorenz, Sauer, Boesel, Podell, Dockhorn, English, Lacey, Goodwin, Marek, and Rombach}}}
 \bibcite{gal2022textual}{{5}{2023}{{Gal et~al.}}{{Gal, Alaluf, Atzmon, Patashnik, Bermano, Chechik, and Cohen-Or}}}
+\newlabel{sec:conclusion}{{6}{9}{}{section.6}{}}
 \bibcite{tokenverse2025}{{6}{2025}{{Garibi et~al.}}{{Garibi, Yadin, Paiss, Tov, Zada, Ephrat, Michaeli, Mosseri, and Dekel}}}
 \bibcite{ho2020denoising}{{7}{2020}{{Ho et~al.}}{{Ho, Jain, and Abbeel}}}
 \bibcite{hu2022lora}{{8}{2022}{{Hu et~al.}}{{Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and Chen}}}
@@ -107,5 +110,5 @@
 \bibcite{zhang2018lpips}{{25}{2018}{{Zhang et~al.}}{{Zhang, Isola, Efros, Shechtman, and Wang}}}
 \bibcite{zhu2025blocklora}{{26}{2025}{{Zhu et~al.}}{{Zhu, Chen, Wang, Yu, Zhao, and Jia}}}
 \bibstyle{icml2025}
-\newlabel{app:implementation}{{A}{10}{}{appendix.A}{}}
-\gdef \@abspage@last{11}
+\newlabel{app:implementation}{{A}{11}{}{appendix.A}{}}
+\gdef \@abspage@last{12}

@@ -43,6 +43,7 @@ A contrastive context disentanglement (CCD) loss operating on intermediate featu
 At inference, a token-aware cross-attention masking protocol enables plug-and-play composition of multiple independently trained subject modules.
 Experiments on Stable Diffusion 1.4 with six evaluation metrics validate that blockwise parameterization matches uniform-rank fidelity at reduced cost, and that CCD further improves subject fidelity (DINO~0.397, CLIP-I~0.780) relative to blockwise training without CCD.
 At 1000 training steps, CCD acts as a regularizer that prevents prompt-alignment degradation, maintaining VQA alignment (0.863) while enabling DINO to reach~0.421---a 6\% improvement that training without CCD cannot achieve without sacrificing prompt fidelity.
+Two-subject composition experiments demonstrate that masked inference achieves $2.76\times$ higher identity isolation than na\"ive LoRA addition, validating the plug-and-play compositional design.
 Additional ablations over identity-block rank and CCD loss weight confirm the robustness of these findings.
 \end{abstract}
 ]
@@ -557,6 +558,58 @@ Blockwise+CCD & 1.49M & 0.397 & 0.267 & 0.780 & 0.863 & 0.761 & 0.00117 & 5.73 \
 \vskip -0.1in
 \end{table*}
 
+\subsection{Multi-Subject Composition}
+\label{sec:multi_subject}
+
+To validate the masked compositional inference protocol (Section~\ref{sec:masked_inference}), we train two independent subject LoRA modules---a ``sks dog'' and a ``sks cat''---each using the blockwise+CCD configuration ($r_{\text{id}}{=}16$, $r_{\text{ctx}}{=}4$, $r_{\text{sh}}{=}8$, $\lambda_2{=}0.3$, 500 steps), and compose them in two-subject scenes.
+
+\paragraph{Setup.}
+We generate 12 two-subject images (6 prompts $\times$ 2 seeds) under two composition strategies:
+(1)~\textbf{Masked composition} (our method): a custom denoising loop where each subject's LoRA is applied independently, its noise prediction is spatially blended using soft masks ($\alpha{=}0.05$ leakage), and negative attention ($\gamma{=}3.0$) suppresses identity features in background regions.
+The dog occupies the left half and the cat the right half of the image.
+(2)~\textbf{Na\"ive LoRA addition} (baseline): both subject LoRAs are applied simultaneously to the UNet, and standard pipeline inference is used without any spatial guidance.
+
+\paragraph{Metrics.}
+We introduce the \textbf{Identity Isolation Score (IIS)}: for each generated image, we crop the left and right halves, compute DINO similarity of each crop to the correct subject's references, and subtract DINO similarity to the incorrect subject.
+Higher IIS indicates less identity mixing.
+We also measure CLIP-T (prompt fidelity) and composition diversity (1 minus DINO similarity between left and right crops; higher means more distinct subjects).
+
+\paragraph{Results.}
+Table~\ref{tab:multi_subject} presents the results.
+Masked composition achieves $2.76\times$ higher IIS than na\"ive addition (0.123 vs.\ 0.045), indicating substantially better identity isolation.
+Cross-contamination---the similarity of each crop to the \emph{wrong} subject's references---drops markedly: from 0.269 to 0.202 for the dog and from 0.238 to 0.206 for the cat under masking.
+Prompt fidelity also improves (CLIP-T 0.278 vs.\ 0.273), and composition diversity increases (0.529 vs.\ 0.477), confirming that the two halves of the image contain more distinct content.
+
+These results validate that independently trained blockwise LoRA modules can be composed at inference via spatial masking without retraining or joint optimization.
+The negative-attention mechanism suppresses identity leakage in background regions, which is the primary source of attribute mixing in the na\"ive baseline.
+
+\begin{table}[t]
+\caption{Multi-subject composition: masked inference vs.\ na\"ive LoRA addition.
+Masked composition achieves $2.76\times$ higher identity isolation (IIS) and reduced cross-subject contamination.}
+\label{tab:multi_subject}
+\vskip 0.1in
+\begin{center}
+\begin{small}
+\begin{tabular}{lcccc}
+\toprule
+Method & IIS$\uparrow$ & CLIP-T$\uparrow$ & Comp.\ Div.$\uparrow$ & Cross-Cont.$\downarrow$ \\
+\midrule
+Na\"ive addition & 0.045 & 0.273 & 0.477 & 0.254 \\
+Masked (ours) & \textbf{0.123} & \textbf{0.278} & \textbf{0.529} & \textbf{0.204} \\
+\bottomrule
+\end{tabular}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/multi_subject_comparison.pdf}
+\caption{Multi-subject composition metrics. Masked inference achieves higher identity isolation (IIS), better prompt fidelity (CLIP-T), and greater spatial differentiation (Comp.\ Diversity) compared to na\"ive LoRA addition, while reducing cross-subject contamination.}
+\label{fig:multi_subject}
+\end{figure}
+
 % ====================================================================
 \section{Discussion}
 \label{sec:discussion}
@@ -586,12 +639,19 @@ All configurations exhibit low CAE values (0.0010--0.0012), indicating that cont
 The training duration ablation reveals a clearer signal: blockwise+CCD at 1000 steps achieves CAE 0.00103, a 12\% reduction from the 500-step CCD result (0.00117) and 8\% lower than the 500-step blockwise-only CAE (0.00112).
 Subjects with strong background correlations in reference images (e.g., a car always photographed in a garage) would provide a more discriminative test of CCD's disentanglement capability.
 
+\paragraph{Multi-subject composition.}
+The masked inference experiment (Table~\ref{tab:multi_subject}) demonstrates that independently trained blockwise LoRA modules can be composed without retraining.
+The $2.76\times$ IIS improvement over na\"ive addition stems from two mechanisms: spatial masking confines each subject's LoRA delta to its designated region, and negative attention actively suppresses identity features in the background.
+Cross-contamination (average DINO similarity of each crop to the wrong subject) drops from 0.254 to 0.204---a 20\% reduction.
+The composition diversity metric (0.529 vs.\ 0.477) confirms that the generated images contain spatially distinct subjects rather than a blended amalgam.
+These results, while preliminary (two subjects, fixed spatial layout), validate the core compositional principle: blockwise LoRA modules trained with CCD produce subject representations that compose cleanly via spatial blending.
+
 \paragraph{Limitations.}
 We identify four key limitations.
 First, our experiments use SD~1.4 rather than modern DiT architectures (FLUX, SD3) due to GPU memory constraints.
 The positional block-classification heuristic may require recalibration for architectures with different functional stratification (e.g., MM-DiT blocks that jointly process text and image tokens).
 Second, the CCD loss relies on color-jittering augmentations rather than segmentation-based background replacement~\citep{kirillov2023segment}, limiting its disentanglement capability; stronger augmentations would likely amplify CCD's regularization benefit observed at 1000 steps.
-Third, multi-subject composition was implemented and validated architecturally (unit tests, module interfaces) but not evaluated with full generation experiments due to resource constraints.
+Third, multi-subject composition was evaluated with a fixed left-right spatial layout for two subjects; more complex arrangements (overlapping regions, three or more subjects, dynamic layouts) remain to be tested.
 Fourth, subject images are synthetic (model-generated), meaning DINO and CLIP-I scores reflect similarity to generated rather than real-world subjects; real photographs would provide a more rigorous evaluation.
 
 \paragraph{Broader context.}
@@ -608,10 +668,10 @@ We presented ModularBooth, a framework for modular multi-subject personalization
 Blockwise rank assignment achieves competitive subject fidelity at 53\% reduced parameter cost by concentrating adaptation capacity in identity-critical transformer blocks.
 The CCD loss provides dual value: at 500 steps, it improves subject fidelity metrics (DINO +1.3\%, CLIP-I +1.2\%); at 1000 steps, it acts as a regularizer that prevents prompt-alignment degradation (maintaining VQA at 0.863) while enabling significant DINO improvement (+6.0\% to 0.421).
 The rank sensitivity ablation confirms that $r_{\text{id}}{=}16$ is the efficiency sweet spot, and the CCD weight ablation identifies $\lambda_2{=}0.3$ as the optimal balance.
-The masked compositional inference protocol enables plug-and-play multi-subject generation from independently trained modules without retraining.
+The masked compositional inference protocol enables plug-and-play multi-subject generation from independently trained modules without retraining, achieving $2.76\times$ higher identity isolation than na\"ive LoRA addition in two-subject composition experiments.
 
 Together, these components form a principled extension of the DreamBooth paradigm that maintains the high-fidelity advantages of fine-tuning-based personalization while addressing its key limitations in parameter efficiency and multi-subject composability.
-Future work will scale ModularBooth to DiT architectures (FLUX, SD3), replace heuristic block classification with learned rank allocation, extend CCD augmentations to segmentation-based background replacement, and evaluate on real-world multi-subject benchmarks.
+Future work will scale ModularBooth to DiT architectures (FLUX, SD3), replace heuristic block classification with learned rank allocation, extend CCD augmentations to segmentation-based background replacement, and evaluate multi-subject composition with more complex spatial arrangements and three or more subjects.
 
 % ====================================================================
 \bibliography{references}
